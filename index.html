@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Grass Plot with Gravel Path and Blue Sky</title>
+    <title>Grass Plot with Gravel Path and Archery Setup</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <style>
       body {
@@ -18,13 +18,30 @@
       <!-- Gravel Path -->
       <a-plane position="0 0.01 0" rotation="-90 0 0" width="5" height="80" material="color: #A9A9A9; repeat: 2 20"></a-plane>
       
+      <!-- Archery Target -->
+      <a-cylinder position="0 1 -10" rotation="90 0 0" radius="1.5" height="0.1" color="white"></a-cylinder>
+      <a-ring position="0 1 -9.95" rotation="90 0 0" radius-inner="1" radius-outer="1.1" color="red"></a-ring>
+      <a-ring position="0 1 -9.9" rotation="90 0 0" radius-inner="0.5" radius-outer="0.6" color="blue"></a-ring>
+      <a-ring position="0 1 -9.85" rotation="90 0 0" radius-inner="0.2" radius-outer="0.3" color="yellow"></a-ring>
+
+      <!-- Bow -->
+      <a-entity id="bow" position="0 1.6 5" rotation="0 0 0" scale="0.5 0.5 0.5" obj-model="obj: url(https://cdn.glitch.com/91f1dcd3-d9e1-4ee1-a4b6-f9796abfd7f2%2Fbow.obj); mtl: url(https://cdn.glitch.com/91f1dcd3-d9e1-4ee1-a4b6-f9796abfd7f2%2Fbow.mtl);"></a-entity>
+      
       <!-- Rocks -->
       <a-box position="-3 0.1 -2" depth="0.2" height="0.2" width="0.2" color="#808080"></a-box>
       <a-cylinder position="3 0.1 -4" radius="0.15" height="0.3" color="#696969"></a-cylinder>
       <a-cone position="-2.5 0.1 5" radius-bottom="0.2" radius-top="0.1" height="0.3" color="#778899"></a-cone>
       <a-dodecahedron position="2.5 0.1 8" radius="0.25" color="#A9A9A9"></a-dodecahedron>
       <a-tetrahedron position="-4 0.1 -10" radius="0.3" color="#B0C4DE"></a-tetrahedron>
-      
+
+      <!-- Fence -->
+      <a-entity position="-10 0 0">
+        <a-entity geometry="primitive: box; width: 0.2; height: 1; depth: 80" material="color: brown" position="0 0.5 0"></a-entity>
+        <a-entity geometry="primitive: box; width: 0.2; height: 1; depth: 80" material="color: brown" position="20 0.5 0"></a-entity>
+        <a-entity geometry="primitive: box; width: 0.2; height: 1; depth: 20" material="color: brown" position="10 0.5 -40" rotation="0 90 0"></a-entity>
+        <a-entity geometry="primitive: box; width: 0.2; height: 1; depth: 20" material="color: brown" position="10 0.5 40" rotation="0 90 0"></a-entity>
+      </a-entity>
+
       <!-- Sky -->
       <a-sky color="#87CEEB"></a-sky>
 
