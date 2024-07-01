@@ -49,10 +49,16 @@
       <!-- Camera -->
       <a-entity camera position="0 1.6 5" wasd-controls="acceleration: 50" look-controls="pointerLockEnabled: true">
         <a-cursor color="#FF0000"></a-cursor>
+        <!-- Crosshair -->
+        <a-entity position="0 0 -1">
+          <a-ring geometry="primitive: ring; radius-inner: 0.03; radius-outer: 0.05" material="color: red; shader: flat"></a-ring>
+          <a-entity geometry="primitive: plane; height: 0.01; width: 0.1" material="color: red; shader: flat" position="0 0 0"></a-entity>
+          <a-entity geometry="primitive: plane; height: 0.1; width: 0.01" material="color: red; shader: flat" position="0 0 0"></a-entity>
+        </a-entity>
       </a-entity>
 
       <!-- Arrow -->
-      <a-entity id="arrow" geometry="primitive: cylinder; radius: 0.05; height: 0.7" material="color: brown" position="0 1.6 4.5" dynamic-body="shape: cylinder; mass: 0.1"></a-entity>
+      <a-entity id="arrow" geometry="primitive: cylinder; radius: 0.005; height: 0.07" material="color: brown" position="0 1.6 4.5" dynamic-body="shape: cylinder; mass: 0.1"></a-entity>
       
       <!-- Shooting Mechanism -->
       <a-entity id="shooting-controller" position="0 1.6 4.5"></a-entity>
