@@ -29,11 +29,7 @@
       <a-entity id="bow" position="0 1.6 0" rotation="0 0 0" scale="0.5 0.5 0.5" obj-model="obj: url(https://cdn.glitch.com/91f1dcd3-d9e1-4ee1-a4b6-f9796abfd7f2%2Fbow.obj); mtl: url(https://cdn.glitch.com/91f1dcd3-d9e1-4ee1-a4b6-f9796abfd7f2%2Fbow.mtl);" static-body></a-entity>
       
       <!-- Rocks -->
-      <a-box position="-3 0.1 -2" depth="0.2" height="0.2" width="0.2" color="#808080" static-body></a-box>
-      <a-cylinder position="3 0.1 -4" radius="0.15" height="0.3" color="#696969" static-body></a-cylinder>
-      <a-cone position="-2.5 0.1 5" radius-bottom="0.2" radius-top="0.1" height="0.3" color="#778899" static-body></a-cone>
-      <a-dodecahedron position="2.5 0.1 8" radius="0.25" color="#A9A9A9" static-body></a-dodecahedron>
-      <a-tetrahedron position="-4 0.1 -10" radius="0.3" color="#B0C4DE" static-body></a-tetrahedron>
+      <a-entity id="rocks"></a-entity>
 
       <!-- Fence -->
       <a-entity position="-10 0 0">
@@ -77,6 +73,58 @@
           );
         }
       });
+
+      // Listen for collisions
+      AFRAME.registerComponent('collider', {
+        init: function () {
+          var el = this.el;
+          el.addEventListener('collide', function (e) {
+            // Stop the arrow's movement by setting its velocity to zero
+            el.body.velocity.set(0, 0, 0);
+            el.body.angularVelocity.set(0, 0, 0);
+            // Disable further physics interactions for the arrow
+            el.removeAttribute('dynamic-body');
+          });
+        }
+      });
+
+      // Add the collider component to the arrow
+      document.querySelector('#arrow').setAttribute('collider', '');
+
+      // Randomly place rocks
+      function getRandomPosition() {
+        return {
+          x: (Math.random() - 0.5) * 20, // Random position between -10 and 10
+          z: (Math.random() - 0.5) * 80 // Random position between -40 and 40
+        };
+      }
+
+      function createRock(position) {
+        const rockTypes = ['box', 'cylinder', 'cone', 'dodecahedron', 'tetrahedron'];
+        const colors = ['#808080', '#696969', '#778899', '#A9A9A9', '#B0C4DE'];
+
+        const typeIndex = Math.floor(Math.random() * rockTypes.length);
+        const colorIndex = Math.floor(Math.random() * colors.length);
+
+        const rock = document.createElement('a-entity');
+        rock.setAttribute('geometry', `primitive: ${rockTypes[typeIndex]};`);
+        rock.setAttribute('material', `color: ${colors[colorIndex]};`);
+        rock.setAttribute('position', `${position.x} 0.1 ${position.z}`);
+        rock.setAttribute('static-body', '');
+
+        return rock;
+      }
+
+      function placeRocks(numRocks) {
+        const rocksContainer = document.querySelector('#rocks');
+        for (let i = 0; i < numRocks; i++) {
+          const position = getRandomPosition();
+          const rock = createRock(position);
+          rocksContainer.appendChild(rock);
+        }
+      }
+
+      placeRocks(20); // Place 20 rocks randomly
     </script>
   </body>
 </html>
