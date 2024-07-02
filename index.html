@@ -29,8 +29,6 @@
       <a-ring position="0 1 -9.99" rotation="0 0 0" radius-inner="0.4" radius-outer="0.6" color="blue" static-body shadow="cast: true"></a-ring>
       <a-ring position="0 1 -9.99" rotation="0 0 0" radius-inner="0.1" radius-outer="0.3" color="yellow" static-body shadow="cast: true"></a-ring>
 
-    
- 
       <!-- Rocks -->
       <a-entity id="rocks"></a-entity>
 
@@ -73,13 +71,15 @@
         arrow.setAttribute('dynamic-body', 'shape: cylinder; mass: 0.1');
         arrow.setAttribute('shadow', 'cast: true');
         arrow.setAttribute('collider', '');
+        
 
         arrow.addEventListener('collide', function(e) {
           // Stop the arrow's movement by setting its velocity to zero
           arrow.body.velocity.set(0, 0, 0);
           arrow.body.angularVelocity.set(0, 0, 0);
           // Disable further physics interactions for the arrow
-          arrow.removeAttribute('dynamic-body');
+          arrow.body.angularDamping = 1;
+          arrow.body.linearDamping = 1;
         });
 
         document.querySelector('#arrows').appendChild(arrow);
@@ -104,9 +104,6 @@
       // Initial arrow creation
       createArrow();
 
-
-
-
       function getRandomNumber(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
       }
@@ -124,9 +121,7 @@
         return getRandomNumber(-80, 80);
       }
 
-     
-
-      function createRock(  ) {
+      function createRock() {
         const rockTypes = ['box', 'tetrahedron', 'cone', 'dodecahedron', 'tetrahedron','torusKnot', 'octahedron', 'icosahedron'];
         const colors = ['#808080', '#696969', '#778899', '#A9A9A9', '#B0C4DE'];
 
@@ -135,7 +130,7 @@
 
         const rock = document.createElement('a-entity');
         const xx = getX();
-        const yy= getY();
+        const yy = getY();
         rock.setAttribute('geometry', `primitive: ${rockTypes[typeIndex]};`);
         rock.setAttribute('material', `color: ${colors[colorIndex]};`);
         rock.setAttribute('position', `${xx} 0.1 ${yy};`);
@@ -148,8 +143,7 @@
       function placeRocks(numRocks) {
         const rocksContainer = document.querySelector('#rocks');
         for (let i = 0; i < numRocks; i++) {
-          const position = getRandomPosition();
-          const rock = createRock(position);
+          const rock = createRock();
           rocksContainer.appendChild(rock);
         }
       }
