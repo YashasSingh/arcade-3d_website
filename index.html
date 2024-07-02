@@ -48,12 +48,12 @@
         <a-cursor color="#FF0000"></a-cursor>
         <!-- Crosshair -->
         <a-entity position="0 0 -1">
-          <a-ring geometry="primitive: ring; radius-inner: 0.03; radius-outer: 0.05" material="color: red; shader: flat"></a-ring>
+          <a-ring geometry="primitive: ring; radius-inner: 0.04; radius-outer: 0.05" material="color: red; shader: flat"></a-ring>
           <a-entity geometry="primitive: plane; height: 0.01; width: 0.1" material="color: red; shader: flat" position="0 0 0"></a-entity>
           <a-entity geometry="primitive: plane; height: 0.1; width: 0.01" material="color: red; shader: flat" position="0 0 0"></a-entity>
         </a-entity>
       </a-entity>
-
+      var playerEl = document.querySelector('[camera]');
       <!-- Arrows -->
       <a-entity id="arrows"></a-entity>
       
@@ -62,16 +62,32 @@
     </a-scene>
 
     <script>
+      var playerEl = document.querySelector('[camera]');
+      playerEl.addEventListener('collide', function (f) {
+        console.log('Player has collided with body #' + e.detail.body.id);
+
+        f.detail.target.el;  // Original entity (playerEl).
+        f.detail.body.el;    // Other entity, which playerEl touched.
+        f.detail.contact;    // Stats about the collision (CANNON.ContactEquation).
+        f.detail.contact.ni; // Normal (direction) of the collision (CANNON.Vec3).
+      });
       function createArrow() {
         var arrow = document.createElement('a-entity');
         arrow.setAttribute('geometry', 'primitive: cylinder; radius: 0.05; height: 1');
         arrow.setAttribute('material', 'color: brown');
         arrow.setAttribute('position', '0 1.6 4.5');
         arrow.setAttribute('rotation', '90 0 0');
-        arrow.setAttribute('dynamic-body', 'shape: cylinder; mass: 0.1');
+        
+        // Set unique collision group for arrows
+        arrow.setAttribute('dynamic-body', {
+          shape: 'cylinder',
+          mass: 0.1,
+          collisionFilterGroup: 1,   // Arrows will belong to group 1
+          collisionFilterMask: 2     // Arrows will collide with objects in group 2 (default)
+        });
+        
         arrow.setAttribute('shadow', 'cast: true');
         arrow.setAttribute('collider', '');
-        
 
         arrow.addEventListener('collide', function(e) {
           // Stop the arrow's movement by setting its velocity to zero
@@ -80,6 +96,7 @@
           // Disable further physics interactions for the arrow
           arrow.body.angularDamping = 1;
           arrow.body.linearDamping = 1;
+          
         });
 
         document.querySelector('#arrows').appendChild(arrow);
@@ -100,6 +117,7 @@
           createArrow();
         }
       });
+      
 
       // Initial arrow creation
       createArrow();
