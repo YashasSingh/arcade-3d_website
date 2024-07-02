@@ -36,15 +36,15 @@
       <a-entity position="-10 0 0">
         <a-entity geometry="primitive: box; width: 0.2; height: 1; depth: 80" material="color: brown" position="0 0.5 0" static-body shadow="cast: true"></a-entity>
         <a-entity geometry="primitive: box; width: 0.2; height: 1; depth: 80" material="color: brown" position="20 0.5 0" static-body shadow="cast: true"></a-entity>
-        <a-entity geometry="primitive: box; width: 0.2; height: 1; depth: 20" material="color: brown" position="10 0.5 -40" rotation="0 90 0" static-body shadow="cast: true"></a-entity>
-        <a-entity geometry="primitive: box; width: 0.2; height: 1; depth: 20" material="color: brown" position="10 0.5 40" rotation="0 90 0" static-body shadow="cast: true"></a-entity>
+        <a-entity geometry="primitive: box; width: 0.2; height: 20; depth: 1" material="color: brown" position="10 0.5 -40" rotation="0 90 0" static-body shadow="cast: true"></a-entity>
+        <a-entity geometry="primitive: box; width: 0.2; height: 20; depth: 1" material="color: brown" position="10 0.5 40" rotation="0 90 0" static-body shadow="cast: true"></a-entity>
       </a-entity>
 
       <!-- Sky -->
       <a-sky color="#87CEEB"></a-sky>
 
       <!-- Camera -->
-      <a-entity camera position="0 1.6 5" wasd-controls="acceleration: 50" look-controls="pointerLockEnabled: true">
+      <a-entity id="camera" camera position="0 1.6 5" wasd-controls="acceleration: 50" look-controls="pointerLockEnabled: true">
         <a-cursor color="#FF0000"></a-cursor>
         <!-- Crosshair -->
         <a-entity position="0 0 -1">
@@ -53,7 +53,7 @@
           <a-entity geometry="primitive: plane; height: 0.1; width: 0.01" material="color: red; shader: flat" position="0 0 0"></a-entity>
         </a-entity>
       </a-entity>
-      var playerEl = document.querySelector('[camera]');
+      
       <!-- Arrows -->
       <a-entity id="arrows"></a-entity>
       
@@ -62,20 +62,10 @@
     </a-scene>
 
     <script>
-      var playerEl = document.querySelector('[camera]');
-      playerEl.addEventListener('collide', function (f) {
-        console.log('Player has collided with body #' + e.detail.body.id);
-
-        f.detail.target.el;  // Original entity (playerEl).
-        f.detail.body.el;    // Other entity, which playerEl touched.
-        f.detail.contact;    // Stats about the collision (CANNON.ContactEquation).
-        f.detail.contact.ni; // Normal (direction) of the collision (CANNON.Vec3).
-      });
       function createArrow() {
         var arrow = document.createElement('a-entity');
         arrow.setAttribute('geometry', 'primitive: cylinder; radius: 0.05; height: 1');
         arrow.setAttribute('material', 'color: brown');
-        arrow.setAttribute('position', '0 1.6 4.5');
         arrow.setAttribute('rotation', '90 0 0');
         
         // Set unique collision group for arrows
@@ -87,7 +77,6 @@
         });
         
         arrow.setAttribute('shadow', 'cast: true');
-        arrow.setAttribute('collider', '');
 
         arrow.addEventListener('collide', function(e) {
           // Stop the arrow's movement by setting its velocity to zero
@@ -96,7 +85,6 @@
           // Disable further physics interactions for the arrow
           arrow.body.angularDamping = 1;
           arrow.body.linearDamping = 1;
-          
         });
 
         document.querySelector('#arrows').appendChild(arrow);
@@ -104,12 +92,33 @@
 
       document.addEventListener('keydown', function(event) {
         if (event.code === 'Space') {
-          // Get the arrow entity
+          var cameraEl = document.querySelector('#camera');
           var arrow = document.querySelector('#arrows').lastElementChild;
+
+          if (!arrow) return;
+
+          var cameraPosition = cameraEl.getAttribute('position');
+          var cameraRotation = cameraEl.getAttribute('rotation');
           
+          // Set the arrow's position to the camera's position
+          arrow.setAttribute('position', cameraPosition);
+
+          // Convert rotation to radians and calculate direction vector
+          var rotationRad = {
+            x: THREE.Math.degToRad(cameraRotation.x),
+            y: THREE.Math.degToRad(cameraRotation.y),
+            z: THREE.Math.degToRad(cameraRotation.z)
+          };
+
+          var direction = new THREE.Vector3(
+            Math.sin(rotationRad.y) * Math.cos(rotationRad.x),
+            -Math.sin(rotationRad.x),
+            -Math.cos(rotationRad.y) * Math.cos(rotationRad.x)
+          );
+
           // Apply an impulse to the arrow to make it shoot forward
           arrow.body.applyImpulse(
-            new CANNON.Vec3(0, 0, -1), // Impulse
+            new CANNON.Vec3(direction.x, direction.y, direction.z).scale(10), // Impulse direction and magnitude
             new CANNON.Vec3().copy(arrow.getAttribute('position')) // Point of application
           );
         }
@@ -117,7 +126,6 @@
           createArrow();
         }
       });
-      
 
       // Initial arrow creation
       createArrow();
