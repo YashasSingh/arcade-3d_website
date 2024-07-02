@@ -1,182 +1,182 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Grass Plot with Archery Game</title>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
-    <style>
-      body {
-        margin: 0;
-        overflow: hidden;
-      }
-    </style>
-  </head>
-  <body>
-    <a-scene physics="gravity: 0 -9.8 0" shadow="type: pcfsoft">
-      <!-- Lights -->
-      <a-light type="directional" position="0 10 0" intensity="0.8" castShadow="true" shadow-mapWidth="2048" shadow-mapHeight="2048"></a-light>
-      <a-light type="ambient" color="#ffffff" intensity="0.4"></a-light>
+                        <!DOCTYPE html>
+                        <html>
+                          <head>
+                            <title>Grass Plot with Archery Game</title>
+                            <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+                            <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
+                            <style>
+                              body {
+                                margin: 0;
+                                overflow: hidden;
+                              }
+                            </style>
+                          </head>
+                          <body>
+                            <a-scene physics="gravity: 0 -9.8 0" shadow="type: pcfsoft">
+                              <!-- Lights -->
+                              <a-light type="directional" position="0 10 0" intensity="0.8" castShadow="true" shadow-mapWidth="2048" shadow-mapHeight="2048"></a-light>
+                              <a-light type="ambient" color="#ffffff" intensity="0.4"></a-light>
 
-      <!-- Grass Plot -->
-      <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="80" material="color: #7BC8A4; repeat: 20 20" static-body shadow="receive: true"></a-plane>
+                              <!-- Grass Plot -->
+                              <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="80" material="color: #7BC8A4; repeat: 20 20" static-body shadow="receive: true"></a-plane>
 
-      <!-- Gravel Path -->
-      <a-plane position="0 0.01 0" rotation="-90 0 0" width="5" height="80" material="color: #A9A9A9; repeat: 2 20" static-body shadow="receive: true"></a-plane>
-      
-      <!-- Archery Target -->
-      <a-cylinder position="0 1 -10" rotation="90 0 0" radius="1.5" height="0.001" color="white" static-body shadow="cast: true"></a-cylinder> 
-      <a-ring position="0 1 -9.99" rotation="0 0 0" radius-inner="0.8" radius-outer="1.1" color="red" static-body shadow="cast: true"></a-ring>
-      <a-ring position="0 1 -9.99" rotation="0 0 0" radius-inner="0.4" radius-outer="0.6" color="blue" static-body shadow="cast: true"></a-ring>
-      <a-ring position="0 1 -9.99" rotation="0 0 0" radius-inner="0.1" radius-outer="0.3" color="yellow" static-body shadow="cast: true"></a-ring>
+                              <!-- Gravel Path -->
+                              <a-plane position="0 0.01 0" rotation="-90 0 0" width="5" height="80" material="color: #A9A9A9; repeat: 2 20" static-body shadow="receive: true"></a-plane>
 
-      <!-- Rocks -->
-      <a-entity id="rocks"></a-entity>
+                              <!-- Archery Target -->
+                              <a-cylinder position="0 1 -10" rotation="90 0 0" radius="1.5" height="0.001" color="white" static-body shadow="cast: true"></a-cylinder> 
+                              <a-ring position="0 1 -9.99" rotation="0 0 0" radius-inner="0.8" radius-outer="1.1" color="red" static-body shadow="cast: true"></a-ring>
+                              <a-ring position="0 1 -9.99" rotation="0 0 0" radius-inner="0.4" radius-outer="0.6" color="blue" static-body shadow="cast: true"></a-ring>
+                              <a-ring position="0 1 -9.99" rotation="0 0 0" radius-inner="0.1" radius-outer="0.3" color="yellow" static-body shadow="cast: true"></a-ring>
 
-      <!-- Fence -->
-      <a-entity position="-10 0 0">
-        <a-entity geometry="primitive: box; width: 0.2; height: 1; depth: 80" material="color: brown" position="0 0.5 0" static-body shadow="cast: true"></a-entity>
-        <a-entity geometry="primitive: box; width: 0.2; height: 1; depth: 80" material="color: brown" position="20 0.5 0" static-body shadow="cast: true"></a-entity>
-        <a-entity geometry="primitive: box; width: 0.2; height: 20; depth: 1" material="color: brown" position="10 0.5 -40" rotation="90 0  90" static-body shadow="cast: true"></a-entity>
-        <a-entity geometry="primitive: box; width: 0.2; height: 20; depth: 1" material="color: brown" position="10 0.5 40" rotation="90 0  90" static-body shadow="cast: true"></a-entity>
-      </a-entity>
+                              <!-- Rocks -->
+                              <a-entity id="rocks"></a-entity>
 
-      <!-- Sky -->
-      <a-sky color="#87CEEB"></a-sky>
+                              <!-- Fence -->
+                              <a-entity position="-10 0 0">
+                                <a-entity geometry="primitive: box; width: 0.2; height: 1; depth: 80" material="color: brown" position="0 0.5 0" static-body shadow="cast: true"></a-entity>
+                                <a-entity geometry="primitive: box; width: 0.2; height: 1; depth: 80" material="color: brown" position="20 0.5 0" static-body shadow="cast: true"></a-entity>
+                                <a-entity geometry="primitive: box; width: 0.2; height: 20; depth: 1" material="color: brown" position="10 0.5 -40" rotation="90 0  90" static-body shadow="cast: true"></a-entity>
+                                <a-entity geometry="primitive: box; width: 0.2; height: 20; depth: 1" material="color: brown" position="10 0.5 40" rotation="90 0  90" static-body shadow="cast: true"></a-entity>
+                              </a-entity>
 
-      <!-- Camera -->
-      <a-entity id="camera" camera position="0 1.6 5" wasd-controls="acceleration: 50" look-controls="pointerLockEnabled: true">
-        <a-cursor color="#FF0000"></a-cursor>
-        <!-- Crosshair -->
-        <a-entity position="0 0 -1">
-          <a-ring geometry="primitive: ring; radius-inner: 0.04; radius-outer: 0.05" material="color: red; shader: flat"></a-ring>
-          <a-entity geometry="primitive: plane; height: 0.01; width: 0.1" material="color: red; shader: flat" position="0 0 0"></a-entity>
-          <a-entity geometry="primitive: plane; height: 0.1; width: 0.01" material="color: red; shader: flat" position="0 0 0"></a-entity>
-        </a-entity>
-      </a-entity>
-      
-      <!-- Arrows -->
-      <a-entity id="arrows"></a-entity>
-      
-      <!-- Shooting Mechanism -->
-      <a-entity id="shooting-controller" position="0 1.6 4.5"></a-entity>
-    </a-scene>
+                              <!-- Sky -->
+                              <a-sky color="#87CEEB"></a-sky>
 
-    <script>
-      function createArrow() {
-        var arrow = document.createElement('a-entity');
-        arrow.setAttribute('geometry', 'primitive: cylinder; radius: 0.05; height: 1');
-        arrow.setAttribute('material', 'color: brown');
-        arrow.setAttribute('rotation', '90 0 0');
-        var head = document.createElement('a-entity');
-        head.setAttribute('geometry', 'primitive: cone; radius-bottom: 0.05; radius-top: 0.01; height: 0.1'));
-        
-        // Set unique collision group for arrows
-        arrow.setAttribute('dynamic-body', {
-          shape: 'cylinder',
-          mass: 0.1,
-          collisionFilterGroup: 1,   // Arrows will belong to group 1
-          collisionFilterMask: 2     // Arrows will collide with objects in group 2 (default)
-        });
-        
-        arrow.setAttribute('shadow', 'cast: true');
+                              <!-- Camera -->
+                              <a-entity id="camera" camera position="0 1.6 5" wasd-controls="acceleration: 50" look-controls="pointerLockEnabled: true">
+                                <a-cursor color="#FF0000"></a-cursor>
+                                <!-- Crosshair -->
+                                <a-entity position="0 0 -1">
+                                  <a-ring geometry="primitive: ring; radius-inner: 0.04; radius-outer: 0.05" material="color: red; shader: flat"></a-ring>
+                                  <a-entity geometry="primitive: plane; height: 0.01; width: 0.1" material="color: red; shader: flat" position="0 0 0"></a-entity>
+                                  <a-entity geometry="primitive: plane; height: 0.1; width: 0.01" material="color: red; shader: flat" position="0 0 0"></a-entity>
+                                </a-entity>
 
-        arrow.addEventListener('collide', function(e) {
-          // Stop the arrow's movement by setting its velocity to zero
-          arrow.body.velocity.set(0, 0, 0);
-          arrow.body.angularVelocity.set(0, 0, 0);
-          // Disable further physics interactions for the arrow
-          arrow.body.angularDamping = 1;
-          arrow.body.linearDamping = 1;
-        });
+                                <!-- Arrows -->
+                                <a-entity id="arrows" position="0 0 -1"></a-entity>
+                              </a-entity>
 
-        document.querySelector('#arrows').appendChild(arrow);
-      }
+                              <!-- Shooting Mechanism -->
+                              <a-entity id="shooting-controller" position="0 1.6 4.5"></a-entity>
+                            </a-scene>
 
-      document.addEventListener('keydown', function(event) {
-        if (event.code === 'Space') {
-          var cameraEl = document.querySelector('#camera');
-          var arrow = document.querySelector('#arrows').lastElementChild;
+                            <script>
+                              function createArrow() {
+                                var arrow = document.createElement('a-entity');
+                                arrow.setAttribute('geometry', 'primitive: cylinder; radius: 0.05; height: 1');
+                                arrow.setAttribute('material', 'color: brown');
+                                arrow.setAttribute('rotation', '90 0 0');
+                                var head = document.createElement('a-entity');
+                                head.setAttribute('geometry', 'primitive: cone; radius-bottom: 0.05; radius-top: 0.01; height: 0.1');
 
-          if (!arrow) return;
+                                // Set unique collision group for arrows
+                                arrow.setAttribute('dynamic-body', {
+                                  shape: 'cylinder',
+                                  mass: 0.1,
+                                  collisionFilterGroup: 1,   // Arrows will belong to group 1
+                                  collisionFilterMask: 2     // Arrows will collide with objects in group 2 (default)
+                                });
 
-          var cameraPosition = cameraEl.getAttribute('position');
-          var cameraRotation = cameraEl.getAttribute('rotation');
-          
-          // Set the arrow's position to the camera's position
-          arrow.setAttribute('position', cameraPosition);
+                                arrow.setAttribute('shadow', 'cast: true');
 
-          // Convert rotation to radians and calculate direction vector
-          var rotationRad = {
-            x: THREE.Math.degToRad(cameraRotation.x),
-            y: THREE.Math.degToRad(cameraRotation.y),
-            z: THREE.Math.degToRad(cameraRotation.z)
-          };
+                                arrow.addEventListener('collide', function(e) {
+                                  // Stop the arrow's movement by setting its velocity to zero
+                                  arrow.body.velocity.set(0, 0, 0);
+                                  arrow.body.angularVelocity.set(0, 0, 0);
+                                  // Disable further physics interactions for the arrow
+                                  arrow.body.angularDamping = 1;
+                                  arrow.body.linearDamping = 1;
+                                });
 
-          var direction = new THREE.Vector3(
-            Math.sin(rotationRad.y) * Math.cos(rotationRad.x),
-            -Math.sin(rotationRad.x),
-            -Math.cos(rotationRad.y) * Math.cos(rotationRad.x)
-          );
+                                document.querySelector('#arrows').appendChild(arrow);
+                              }
 
-          // Apply an impulse to the arrow to make it shoot forward
-          arrow.body.applyImpulse(
-            new CANNON.Vec3(-direction.x, -direction.y, direction.z).scale(3), // Impulse direction and magnitude
-            new CANNON.Vec3().copy(arrow.getAttribute('position')) // Point of application
-          );
-        }
-        if (event.code === 'KeyR') {
-          createArrow();
-        }
-      });
+                              document.addEventListener('keydown', function(event) {
+                                if (event.code === 'Space') {
+                                  var cameraEl = document.querySelector('#camera');
+                                  var arrow = document.querySelector('#arrows').lastElementChild;
 
-      // Initial arrow creation
-      createArrow();
+                                  if (!arrow) return;
 
-      function getRandomNumber(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-      }
+                                  var cameraPosition = cameraEl.getAttribute('position');
+                                  var cameraRotation = cameraEl.getAttribute('rotation');
 
-      // Randomly place rocks
-      function getX() {
-        let x;
-        do {
-          x = getRandomNumber(-10, 10);
-        } while (x >= -2.5 && x <= 2.5);
-        return x;
-      }
+                                  // Set the arrow's position to the camera's position
+                                  arrow.setAttribute('position', cameraPosition);
 
-      function getY() {
-        return getRandomNumber(-40, 40);
-      }
+                                  // Convert rotation to radians and calculate direction vector
+                                  var rotationRad = {
+                                    x: THREE.Math.degToRad(cameraRotation.x),
+                                    y: THREE.Math.degToRad(cameraRotation.y),
+                                    z: THREE.Math.degToRad(cameraRotation.z)
+                                  };
 
-      function createRock() {
-        const rockTypes = ['box', 'tetrahedron', 'cone', 'dodecahedron', 'tetrahedron','torusKnot', 'octahedron', 'icosahedron'];
-        const colors = ['#808080', '#696969', '#778899', '#A9A9A9', '#B0C4DE'];
+                                  var direction = new THREE.Vector3(
+                                    Math.sin(rotationRad.y) * Math.cos(rotationRad.x),
+                                    -Math.sin(rotationRad.x),
+                                    -Math.cos(rotationRad.y) * Math.cos(rotationRad.x)
+                                  );
 
-        const typeIndex = Math.floor(Math.random() * rockTypes.length);
-        const colorIndex = Math.floor(Math.random() * colors.length);
+                                  // Apply an impulse to the arrow to make it shoot forward
+                                  arrow.body.applyImpulse(
+                                    new CANNON.Vec3(-direction.x, -direction.y, direction.z).scale(3), // Impulse direction and magnitude
+                                    new CANNON.Vec3().copy(arrow.getAttribute('position')) // Point of application
+                                  );
+                                }
+                                if (event.code === 'KeyR') {
+                                  createArrow();
+                                }
+                              });
 
-        const rock = document.createElement('a-entity');
-        const xx = getX();
-        const yy = getY();
-        rock.setAttribute('geometry', `primitive: ${rockTypes[typeIndex]};`);
-        rock.setAttribute('material', `color: ${colors[colorIndex]};`);
-        rock.setAttribute('position', `${xx} 0.1 ${yy};`);
-        rock.setAttribute('static-body', '');
-        rock.setAttribute('shadow', 'cast: true; receive: true');
+                              // Initial arrow creation
+                              createArrow();
 
-        return rock;
-      }
+                              function getRandomNumber(min, max) {
+                                return Math.floor(Math.random() * (max - min + 1)) + min;
+                              }
 
-      function placeRocks(numRocks) {
-        const rocksContainer = document.querySelector('#rocks');
-        for (let i = 0; i < numRocks; i++) {
-          const rock = createRock();
-          rocksContainer.appendChild(rock);
-        }
-      }
+                              // Randomly place rocks
+                              function getX() {
+                                let x;
+                                do {
+                                  x = getRandomNumber(-10, 10);
+                                } while (x >= -2.5 && x <= 2.5);
+                                return x;
+                              }
 
-      placeRocks(20); // Place 20 rocks randomly
-    </script>
-  </body>
-</html>
+                              function getY() {
+                                return getRandomNumber(-40, 40);
+                              }
+
+                              function createRock() {
+                                const rockTypes = ['box', 'tetrahedron', 'cone', 'dodecahedron', 'tetrahedron','torusKnot', 'octahedron', 'icosahedron'];
+                                const colors = ['#808080', '#696969', '#778899', '#A9A9A9', '#B0C4DE'];
+
+                                const typeIndex = Math.floor(Math.random() * rockTypes.length);
+                                const colorIndex = Math.floor(Math.random() * colors.length);
+
+                                const rock = document.createElement('a-entity');
+                                const xx = getX();
+                                const yy = getY();
+                                rock.setAttribute('geometry', `primitive: ${rockTypes[typeIndex]};`);
+                                rock.setAttribute('material', `color: ${colors[colorIndex]};`);
+                                rock.setAttribute('position', `${xx} 0.1 ${yy};`);
+                                rock.setAttribute('static-body', '');
+                                rock.setAttribute('shadow', 'cast: true; receive: true');
+
+                                return rock;
+                              }
+
+                              function placeRocks(numRocks) {
+                                const rocksContainer = document.querySelector('#rocks');
+                                for (let i = 0; i < numRocks; i++) {
+                                  const rock = createRock();
+                                  rocksContainer.appendChild(rock);
+                                }
+                              }
+
+                              placeRocks(20); // Place 20 rocks randomly
+                            </script>
+                          </body>
+                        </html>
