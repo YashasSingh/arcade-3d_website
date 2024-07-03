@@ -62,20 +62,34 @@
     </a-scene>
 
     <script>
-      function targetmove(){
+      function maketarget(){
         var target = document.querySelector('a-entity');
         target.setAttribute('geometry','primitive: cylinder; radius: 1.5; height: .001');
-        arrow.setAttribute('material', 'color: brown');
-        arrow.setAttribute('rotation', '90 0 0');
+        target.setAttribute('material', 'color: brown');
+        target.setAttribute('rotation', '90 0 0');
+        var red = document.querySelector('a-entity');
+        red.setAttribute('geometry','primitive: cylinder; radius: 1.1; height: .001');
+        red.setAttribute('material', 'color: red');
+        red.setAttribute('rotation', '90 0 0');
+        red.setAttribute('position', '0 0 0.01');
+        target.appendChild(red);
+        var blue = document.querySelector('a-entity');
+        blue.setAttribute('geometry','primitive: cylinder; radius 0.6; height: .001');
+        blue.setAttribute('material', 'color: blue');
+        blue.setAttribute('rotation', '90 0 0');
+        blue.setAttribute('position', '0 0 0.02');
+        target.appendChild(blue);
+        
+        
+        
       }
+      maketarget()
 
 
+          <a-cylinder position="0 1 -9.98" rotation="90 0 0" radius="0.6" height="0.001" color="blue" static-body shadow="cast: true"></a-cylinder>
+      <a-cylinder position="0 1 -9.97" rotation="90 0 0" radius="0.3" height="0.001" color="yellow" static-body shadow="cast: true"></a-cylinder> -->
 
 
-      <a-cylinder position="0 1 -10" rotation="90 0 0" radius="1.5" height="0.001" color="white" static-body shadow="cast: true"></a-cylinder> 
-      <a-cylinder position="0 1 -9.99" rotation="90 0 0" radius="1.1" height="0.001" color="red" static-body shadow="cast: true"></a-cylinder>
-      <a-cylinder position="0 1 -9.98" rotation="90 0 0" radius="0.6" height="0.001" color="blue" static-body shadow="cast: true"></a-cylinder>
-      <a-cylinder position="0 1 -9.97" rotation="90 0 0" radius="0.3" height="0.001" color="yellow" static-body shadow="cast: true"></a-cylinder>
       function createArrow() {
         var arrow = document.createElement('a-entity');
         arrow.setAttribute('geometry', 'primitive: cylinder; radius: 0.03; height: .75');
