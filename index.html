@@ -9,9 +9,19 @@
         margin: 0;
         overflow: hidden;
       }
+      #scoreboard {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: rgba(255, 255, 255, 0.8);
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 18px;
+      }
     </style>
   </head>
   <body>
+    <div id="scoreboard">Score: 0</div>
     <a-scene physics="gravity: 0 -9.8 0" shadow="type: pcfsoft">
       <!-- Lights -->
       <a-light type="directional" position="0 10 0" intensity="0.8" castShadow="true" shadow-mapWidth="2048" shadow-mapHeight="2048"></a-light>
@@ -24,10 +34,10 @@
       <a-plane position="0 0.01 0" rotation="-90 0 0" width="5" height="80" material="color: #A9A9A9; repeat: 2 20" static-body shadow="receive: true"></a-plane>
       
       <!-- Archery Target -->
-      <a-cylinder position="0 1 -10" rotation="90 0 0" radius="1.5" height="0.001" color="white" static-body shadow="cast: true"></a-cylinder> 
-      <a-cylinder position="0 1 -9.99" rotation="90 0 0" radius="1.1" height="0.001" color="red" static-body shadow="cast: true"></a-cylinder>
-      <a-cylinder position="0 1 -9.98" rotation="90 0 0" radius="0.6" height="0.001" color="blue" static-body shadow="cast: true"></a-cylinder>
-      <a-cylinder position="0 1 -9.97" rotation="90 0 0" radius="0.3" height="0.001" color="yellow" static-body shadow="cast: true"></a-cylinder>
+      <a-cylinder id="target-white" position="0 1 -10" rotation="90 0 0" radius="1.5" height="0.001" color="white" static-body shadow="cast: true"></a-cylinder> 
+      <a-cylinder id="target-red" position="0 1 -9.99" rotation="90 0 0" radius="1.1" height="0.001" color="red" static-body shadow="cast: true"></a-cylinder>
+      <a-cylinder id="target-blue" position="0 1 -9.98" rotation="90 0 0" radius="0.6" height="0.001" color="blue" static-body shadow="cast: true"></a-cylinder>
+      <a-cylinder id="target-yellow" position="0 1 -9.97" rotation="90 0 0" radius="0.3" height="0.001" color="yellow" static-body shadow="cast: true"></a-cylinder>
 
       <!-- Rocks -->
       <a-entity id="rocks"></a-entity>
@@ -62,33 +72,12 @@
     </a-scene>
 
     <script>
-      function maketarget(){
-        var target = document.querySelector('a-entity');
-        target.setAttribute('geometry','primitive: cylinder; radius: 1.5; height: .001');
-        target.setAttribute('material', 'color: brown');
-        target.setAttribute('rotation', '90 0 0');
-        var red = document.querySelector('a-entity');
-        red.setAttribute('geometry','primitive: cylinder; radius: 1.1; height: .001');
-        red.setAttribute('material', 'color: red');
-        red.setAttribute('rotation', '90 0 0');
-        red.setAttribute('position', '0 0 0.01');
-        target.appendChild(red);
-        var blue = document.querySelector('a-entity');
-        blue.setAttribute('geometry','primitive: cylinder; radius 0.6; height: .001');
-        blue.setAttribute('material', 'color: blue');
-        blue.setAttribute('rotation', '90 0 0');
-        blue.setAttribute('position', '0 0 0.02');
-        target.appendChild(blue);
-        
-        
-        
+      var score = 0;
+
+      function updateScore(points) {
+        score += points;
+        document.getElementById('scoreboard').innerText = 'Score: ' + score;
       }
-      maketarget()
-
-
-          <a-cylinder position="0 1 -9.98" rotation="90 0 0" radius="0.6" height="0.001" color="blue" static-body shadow="cast: true"></a-cylinder>
-      <a-cylinder position="0 1 -9.97" rotation="90 0 0" radius="0.3" height="0.001" color="yellow" static-body shadow="cast: true"></a-cylinder> -->
-
 
       function createArrow() {
         var arrow = document.createElement('a-entity');
@@ -116,6 +105,17 @@
         arrow.setAttribute('shadow', 'cast: true');
 
         arrow.addEventListener('collide', function(e) {
+          var targetId = e.detail.body.el.id;
+          if (targetId === 'target-white') {
+            updateScore(10);
+          } else if (targetId === 'target-red') {
+            updateScore(20);
+          } else if (targetId === 'target-blue') {
+            updateScore(30);
+          } else if (targetId === 'target-yellow') {
+            updateScore(50);
+          }
+
           // Stop the arrow's movement by setting its velocity to zero
           arrow.body.velocity.set(0, 0, 0);
           arrow.body.angularVelocity.set(0, 0, 0);
