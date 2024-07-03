@@ -81,7 +81,7 @@
 
       function createArrow() {
         var arrow = document.createElement('a-entity');
-        arrow.setAttribute('geometry', 'primitive: cylinder; radius: 0.03; height: .75');
+        arrow.setAttribute('geometry', 'primitive: cylinder; radius: 0.03; height: 0.75');
         arrow.setAttribute('material', 'color: brown');
         arrow.setAttribute('rotation', '90 0 0');
         
@@ -89,10 +89,38 @@
         head.setAttribute('geometry', 'primitive: cone; radius-bottom: 0.05; radius-top: 0.01; height: 0.1');
         head.setAttribute('material', 'color: gray');
         head.setAttribute('rotation', '180 0 0');
-        head.setAttribute('position', '0 -.55 0'); // Position the cone at the end of the cylinder
+        head.setAttribute('position', '0 -0.55 0'); // Position the cone at the end of the cylinder
 
-        // Append head to arrow
+        var feather1 = document.createElement('a-entity');
+        feather1.setAttribute('geometry', 'primitive: plane; height: 0.15; width: 0.05');
+        feather1.setAttribute('material', 'color: white');
+        feather1.setAttribute('rotation', '0 0 45');
+        feather1.setAttribute('position', '0.03 0.37 0');
+
+        var feather2 = document.createElement('a-entity');
+        feather2.setAttribute('geometry', 'primitive: plane; height: 0.15; width: 0.05');
+        feather2.setAttribute('material', 'color: white');
+        feather2.setAttribute('rotation', '0 0 -45');
+        feather2.setAttribute('position', '-0.03 0.37 0');
+
+        var feather3 = document.createElement('a-entity');
+        feather3.setAttribute('geometry', 'primitive: plane; height: 0.15; width: 0.05');
+        feather3.setAttribute('material', 'color: white');
+        feather3.setAttribute('rotation', '0 90 45');
+        feather3.setAttribute('position', '0 0.37 0.03');
+
+        var feather4 = document.createElement('a-entity');
+        feather4.setAttribute('geometry', 'primitive: plane; height: 0.15; width: 0.05');
+        feather4.setAttribute('material', 'color: white');
+        feather4.setAttribute('rotation', '0 90 -45');
+        feather4.setAttribute('position', '0 0.37 -0.03');
+
+        // Append head and feathers to arrow
         arrow.appendChild(head);
+        arrow.appendChild(feather1);
+        arrow.appendChild(feather2);
+        arrow.appendChild(feather3);
+        arrow.appendChild(feather4);
 
         // Set unique collision group for arrows
         arrow.setAttribute('dynamic-body', {
@@ -199,6 +227,7 @@
         rock.setAttribute('position', `${xx} 0.1 ${yy};`);
         rock.setAttribute('static-body', '');
         rock.setAttribute('shadow', 'cast: true; receive: true');
+        rock.setAttribute('scale', '.6 .6 .6')
 
         return rock;
       }
