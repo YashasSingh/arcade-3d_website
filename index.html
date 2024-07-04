@@ -78,6 +78,7 @@
     <a-assets>
       <audio id="shoot-sound" src="shoot.mp3"></audio>
       <audio id="hit-sound" src="hit.mp3"></audio>
+      <audio id="reload-sound" src="reload.mp3"></audio>
     </a-assets>
   
     <script>
@@ -226,7 +227,9 @@
           updateArrowsRemaining();
         }
         if (event.code === 'KeyR' && arrowsRemaining > 0) {
+          document.querySelector('#reload-sound').play();
           createArrow();
+          
         }
       });
   
