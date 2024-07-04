@@ -62,11 +62,22 @@
         <a-entity geometry="primitive: plane; height: 0.01; width: 0.1" material="color: red; shader: flat" position="0 0 0"></a-entity>
         <a-entity geometry="primitive: plane; height: 0.1; width: 0.01" material="color: red; shader: flat" position="0 0 0"></a-entity>
       </a-entity>
-      
-      <!-- Arrows -->
-      <a-entity id="arrows" position="0 0 -1"></a-entity>
+
+      <!-- Arrow Placeholder -->
+      <a-entity id="arrow-placeholder" position="0.5 -0.5 -1">
+        <a-entity id="arrow-visual" geometry="primitive: cylinder; radius: 0.03; height: 0.75" material="color: brown" rotation="90 0 0">
+          <a-entity geometry="primitive: cone; radius-bottom: 0.05; radius-top: 0.01; height: 0.1" material="color: gray" rotation="180 0 0" position="0 -0.55 0"></a-entity>
+          <a-entity geometry="primitive: plane; height: 0.15; width: 0.05" material="color: white" rotation="0 0 45" position="0.03 0.37 0"></a-entity>
+          <a-entity geometry="primitive: plane; height: 0.15; width: 0.05" material="color: white" rotation="0 0 -45" position="-0.03 0.37 0"></a-entity>
+          <a-entity geometry="primitive: plane; height: 0.15; width: 0.05" material="color: white" rotation="0 90 45" position="0 0.37 0.03"></a-entity>
+          <a-entity geometry="primitive: plane; height: 0.15; width: 0.05" material="color: white" rotation="0 90 -45" position="0 0.37 -0.03"></a-entity>
+        </a-entity>
+      </a-entity>
     </a-entity>
-    
+
+    <!-- Arrows -->
+    <a-entity id="arrows" position="0 0 -1"></a-entity>
+
     <!-- Shooting Mechanism -->
     <a-entity id="shooting-controller" position="0 1.6 4.5"></a-entity>
   </a-scene>
@@ -104,12 +115,12 @@
       arrow.setAttribute('geometry', 'primitive: cylinder; radius: 0.03; height: 0.75');
       arrow.setAttribute('material', 'color: brown');
       arrow.setAttribute('rotation', '90 0 0');
-      
+
       var head = document.createElement('a-entity');
       head.setAttribute('geometry', 'primitive: cone; radius-bottom: 0.05; radius-top: 0.01; height: 0.1');
       head.setAttribute('material', 'color: gray');
       head.setAttribute('rotation', '180 0 0');
-      head.setAttribute('position', '0 -0.55 0'); // Position the cone at the end of the cylinder
+      head.setAttribute('position', '0 -0.55 0');
 
       var feather1 = document.createElement('a-entity');
       feather1.setAttribute('geometry', 'primitive: plane; height: 0.15; width: 0.05');
@@ -141,7 +152,11 @@
       arrow.appendChild(feather3);
       arrow.appendChild(feather4);
 
-      arrow.setAttribute('dynamic-body', 'mass: 0.1;');
+      // Set collision filter group and mask
+      var collisionFilterGroup = 1; // Group 1
+      var collisionFilterMask = 2; // Collides with everything except group 1
+
+      arrow.setAttribute('dynamic-body', 'mass: 0.1; collisionFilterGroup: ' + collisionFilterGroup + '; collisionFilterMask: ' + collisionFilterMask);
       arrow.setAttribute('shadow', 'cast: true');
 
       arrow.addEventListener('collide', function (e) {
@@ -204,9 +219,15 @@
           new CANNON.Vec3(-direction.x, -direction.y, direction.z).scale(3), // Impulse direction and magnitude
           new CANNON.Vec3().copy(arrow.getAttribute('position')) // Point of application
         );
+
+        // Remove the arrow visual from the bottom right of the screen
+        document.querySelector('#arrow-visual').setAttribute('visible', false);
       }
+
       if (event.code === 'KeyR') {
         createArrow();
+        // Make the arrow visual visible again
+        document.querySelector('#arrow-visual').setAttribute('visible', true);
       }
     });
 
@@ -258,7 +279,7 @@
       }
     }
 
-    placeRocks(20); // Place 20 rocks randomly
+    placeRocks(60); // Place 20 rocks randomly
   </script>
 </body>
 </html>
