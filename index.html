@@ -9,9 +9,23 @@
       margin: 0;
       overflow: hidden;
     }
+    #scoreboard {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: white;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border-radius: 5px;
+      font-family: Arial, sans-serif;
+    }
   </style>
 </head>
 <body>
+  <div id="scoreboard">
+    <p>Score: <span id="score">0</span></p>
+    <p>Arrows Remaining: <span id="arrows-remaining">5</span></p>
+  </div>
   <a-scene physics="gravity: 0 -9.8 0" shadow="type: pcfsoft">
     <!-- Lights -->
     <a-light type="directional" position="0 10 0" intensity="0.8" castShadow="true" shadow-mapWidth="2048" shadow-mapHeight="2048"></a-light>
@@ -59,199 +73,214 @@
     
     <!-- Shooting Mechanism -->
     <a-entity id="shooting-controller" position="0 1.6 4.5"></a-entity>
-  </a-scene>
 
-  <script>
-    var score = 0;
+    <!-- Sound Effects -->
+    <a-assets>
+      <audio id="shoot-sound" src="shoot.mp3"></audio>
+      <audio id="hit-sound" src="hit.mp3"></audio>
+    </a-assets>
+  
+    <script>
+      var score = 0;
+      var arrowsRemaining = 5;
+  
+      function updateScore(points) {
+        score += points;
+        document.getElementById('score').innerText = score;
+        console.log('Score updated:', score);
+      }
+  
+      function updateArrowsRemaining() {
+        document.getElementById('arrows-remaining').innerText = arrowsRemaining;
+        console.log('Arrows remaining:', arrowsRemaining);
+      }
+  
+      function getRandomPosition() {
+        var x = Math.random() * 20 - 10;
+        var z = Math.random() * 80 - 40;
+        return { x: x, z: z };
+      }
+  
+      function moveTarget() {
+        var newPosition = getRandomPosition();
+        var targetWhite = document.querySelector('#target-white');
+        var targetRed = document.querySelector('#target-red');
+        var targetBlue = document.querySelector('#target-blue');
+        var targetYellow = document.querySelector('#target-yellow');
+  
+        targetWhite.setAttribute('position', { x: newPosition.x, y: 1, z: newPosition.z });
+        targetRed.setAttribute('position', { x: newPosition.x, y: 1, z: newPosition.z + 0.01 });
+        targetBlue.setAttribute('position', { x: newPosition.x, y: 1, z: newPosition.z + 0.02 });
+        targetYellow.setAttribute('position', { x: newPosition.x, y: 1, z: newPosition.z + 0.03 });
+      }
+  
+      function createArrow() {
+        var arrow = document.createElement('a-entity');
+        arrow.setAttribute('geometry', 'primitive: cylinder; radius: 0.03; height: 0.75');
+        arrow.setAttribute('material', 'color: brown');
+        arrow.setAttribute('rotation', '90 0 0');
 
-    function updateScore(points) {
-      score += points;
-      console.log('Score updated:', score);
-    }
-
-    function getRandomPosition() {
-      var x = Math.random() * 20 - 10;
-      var z = Math.random() * 80 - 40;
-      return { x: x, z: z };
-    }
-
-    function moveTarget() {
-      var newPosition = getRandomPosition();
-      var targetWhite = document.querySelector('#target-white');
-      var targetRed = document.querySelector('#target-red');
-      var targetBlue = document.querySelector('#target-blue');
-      var targetYellow = document.querySelector('#target-yellow');
-
-      targetWhite.setAttribute('position', { x: newPosition.x, y: 1, z: newPosition.z });
-      targetRed.setAttribute('position', { x: newPosition.x, y: 1, z: newPosition.z + 0.01 });
-      targetBlue.setAttribute('position', { x: newPosition.x, y: 1, z: newPosition.z + 0.02 });
-      targetYellow.setAttribute('position', { x: newPosition.x, y: 1, z: newPosition.z + 0.03 });
-    }
-
-    function createArrow() {
-      var arrow = document.createElement('a-entity');
-      arrow.setAttribute('geometry', 'primitive: cylinder; radius: 0.03; height: 0.75');
-      arrow.setAttribute('material', 'color: brown');
-      arrow.setAttribute('rotation', '90 0 0');
-      
-      var head = document.createElement('a-entity');
-      head.setAttribute('geometry', 'primitive: cone; radius-bottom: 0.05; radius-top: 0.01; height: 0.1');
-      head.setAttribute('material', 'color: gray');
-      head.setAttribute('rotation', '180 0 0');
-      head.setAttribute('position', '0 -0.55 0'); // Position the cone at the end of the cylinder
-
-      var feather1 = document.createElement('a-entity');
-      feather1.setAttribute('geometry', 'primitive: plane; height: 0.15; width: 0.05');
-      feather1.setAttribute('material', 'color: white');
-      feather1.setAttribute('rotation', '0 0 45');
-      feather1.setAttribute('position', '0.03 0.37 0');
-
-      var feather2 = document.createElement('a-entity');
-      feather2.setAttribute('geometry', 'primitive: plane; height: 0.15; width: 0.05');
-      feather2.setAttribute('material', 'color: white');
-      feather2.setAttribute('rotation', '0 0 -45');
-      feather2.setAttribute('position', '-0.03 0.37 0');
-
-      var feather3 = document.createElement('a-entity');
-      feather3.setAttribute('geometry', 'primitive: plane; height: 0.15; width: 0.05');
-      feather3.setAttribute('material', 'color: white');
-      feather3.setAttribute('rotation', '0 90 45');
-      feather3.setAttribute('position', '0 0.37 0.03');
-
-      var feather4 = document.createElement('a-entity');
-      feather4.setAttribute('geometry', 'primitive: plane; height: 0.15; width: 0.05');
-      feather4.setAttribute('material', 'color: white');
-      feather4.setAttribute('rotation', '0 90 -45');
-      feather4.setAttribute('position', '0 0.37 -0.03');
-
-      arrow.appendChild(head);
-      arrow.appendChild(feather1);
-      arrow.appendChild(feather2);
-      arrow.appendChild(feather3);
-      arrow.appendChild(feather4);
-
-      // Set collision filter group and mask
-      var collisionFilterGroup = 1; // Group 1
-      var collisionFilterMask = 1 | 2; // Collides with Group 1 and Group 2
-
-      arrow.setAttribute('dynamic-body', 'mass: 0.1; collisionFilterGroup: ' + collisionFilterGroup + '; collisionFilterMask: ' + collisionFilterMask);
-      arrow.setAttribute('shadow', 'cast: true');
-
-      arrow.addEventListener('collide', function (e) {
-        var targetId = e.detail.body.el.getAttribute('id');
-        console.log('Arrow collided with:', targetId);
-
-        if (targetId === 'target-white') {
-          updateScore(10);
-          moveTarget();
-        } else if (targetId === 'target-red') {
-          updateScore(20);
-          moveTarget();
-        } else if (targetId === 'target-blue') {
-          updateScore(30);
-          moveTarget();
-        } else if (targetId === 'target-yellow') {
-          updateScore(50);
-          moveTarget();
+        var head = document.createElement('a-entity');
+        head.setAttribute('geometry', 'primitive: cone; radius-bottom: 0.05; radius-top: 0.01; height: 0.1');
+        head.setAttribute('material', 'color: gray');
+        head.setAttribute('rotation', '180 0 0');
+        head.setAttribute('position', '0 -0.55 0'); // Position the cone at the end of the cylinder
+  
+        var feather1 = document.createElement('a-entity');
+        feather1.setAttribute('geometry', 'primitive: plane; height: 0.15; width: 0.05');
+        feather1.setAttribute('material', 'color: white');
+        feather1.setAttribute('rotation', '0 0 45');
+        feather1.setAttribute('position', '0.03 0.37 0');
+  
+        var feather2 = document.createElement('a-entity');
+        feather2.setAttribute('geometry', 'primitive: plane; height: 0.15; width: 0.05');
+        feather2.setAttribute('material', 'color: white');
+        feather2.setAttribute('rotation', '0 0 -45');
+        feather2.setAttribute('position', '-0.03 0.37 0');
+  
+        var feather3 = document.createElement('a-entity');
+        feather3.setAttribute('geometry', 'primitive: plane; height: 0.15; width: 0.05');
+        feather3.setAttribute('material', 'color: white');
+        feather3.setAttribute('rotation', '0 90 -45');
+        feather3.setAttribute('position', '0 0.37 0.03');
+  
+        var feather4 = document.createElement('a-entity');
+        feather4.setAttribute('geometry', 'primitive: plane; height: 0.15; width: 0.05');
+        feather4.setAttribute('material', 'color: white');
+        feather4.setAttribute('rotation', '0 90 45');
+        feather4.setAttribute('position', '0 0.37 -0.03');
+  
+        arrow.appendChild(head);
+        arrow.appendChild(feather1);
+        arrow.appendChild(feather2);
+        arrow.appendChild(feather3);
+        arrow.appendChild(feather4);
+  
+        arrow.setAttribute('dynamic-body', 'mass: 0.1');
+        arrow.setAttribute('shadow', 'cast: true');
+  
+        arrow.addEventListener('collide', function (e) {
+          var targetId = e.detail.body.el.getAttribute('id');
+          console.log('Arrow collided with:', targetId);
+          document.querySelector('#hit-sound').play();
+  
+          if (targetId === 'target-white') {
+            updateScore(10);
+            moveTarget();
+          } else if (targetId === 'target-red') {
+            updateScore(20);
+            moveTarget();
+          } else if (targetId === 'target-blue') {
+            updateScore(30);
+            moveTarget();
+          } else if (targetId === 'target-yellow') {
+            updateScore(50);
+            moveTarget();
+          }
+  
+          // Stop the arrow's movement by setting its velocity to zero
+          arrow.body.velocity.set(0, 0, 0);
+          arrow.body.angularVelocity.set(0, 0, 0);
+          // Disable further physics interactions for the arrow
+          arrow.body.angularDamping = 1;
+          arrow.body.linearDamping = 1;
+        });
+  
+        document.querySelector('#arrows').appendChild(arrow);
+      }
+  
+      document.addEventListener('keydown', function (event) {
+        if (event.code === 'Space' && arrowsRemaining > 0) {
+          var cameraEl = document.querySelector('#camera');
+          var arrow = document.querySelector('#arrows').lastElementChild;
+  
+          if (!arrow) return;
+  
+          var cameraPosition = cameraEl.getAttribute('position');
+          var cameraRotation = cameraEl.getAttribute('rotation');
+  
+          // Set the arrow's position to the camera's position
+          arrow.setAttribute('position', cameraPosition);
+  
+          // Convert rotation to radians and calculate direction vector
+          var rotationRad = {
+            x: THREE.Math.degToRad(cameraRotation.x),
+            y: THREE.Math.degToRad(cameraRotation.y),
+            z: THREE.Math.degToRad(cameraRotation.z)
+          };
+  
+          var direction = new THREE.Vector3(
+            Math.sin(rotationRad.y) * Math.cos(rotationRad.x),
+            -Math.sin(rotationRad.x),
+            -Math.cos(rotationRad.y) * Math.cos(rotationRad.x)
+          );
+  
+          // Apply an impulse to the arrow to make it shoot forward
+          arrow.body.applyImpulse(
+            new CANNON.Vec3(-direction.x, -direction.y, direction.z).scale(3), // Impulse direction and magnitude
+            new CANNON.Vec3().copy(arrow.getAttribute('position')) // Point of application
+          );
+  
+          document.querySelector('#shoot-sound').play();
+          arrowsRemaining--;
+          updateArrowsRemaining();
         }
-
-        // Stop the arrow's movement by setting its velocity to zero
-        arrow.body.velocity.set(0, 0, 0);
-        arrow.body.angularVelocity.set(0, 0, 0);
-        // Disable further physics interactions for the arrow
-        arrow.body.angularDamping = 1;
-        arrow.body.linearDamping = 1;
+        if (event.code === 'KeyR' && arrowsRemaining > 0) {
+          createArrow();
+        }
       });
-
-      document.querySelector('#arrows').appendChild(arrow);
-    }
-
-    document.addEventListener('keydown', function (event) {
-      if (event.code === 'Space') {
-        var cameraEl = document.querySelector('#camera');
-        var arrow = document.querySelector('#arrows').lastElementChild;
-
-        if (!arrow) return;
-
-        var cameraPosition = cameraEl.getAttribute('position');
-        var cameraRotation = cameraEl.getAttribute('rotation');
-
-        // Set the arrow's position to the camera's position
-        arrow.setAttribute('position', cameraPosition);
-
-        // Convert rotation to radians and calculate direction vector
-        var rotationRad = {
-          x: THREE.Math.degToRad(cameraRotation.x),
-          y: THREE.Math.degToRad(cameraRotation.y),
-          z: THREE.Math.degToRad(cameraRotation.z)
-        };
-
-        var direction = new THREE.Vector3(
-          Math.sin(rotationRad.y) * Math.cos(rotationRad.x),
-          -Math.sin(rotationRad.x),
-          -Math.cos(rotationRad.y) * Math.cos(rotationRad.x)
-        );
-
-        // Apply an impulse to the arrow to make it shoot forward
-        arrow.body.applyImpulse(
-          new CANNON.Vec3(-direction.x, -direction.y, direction.z).scale(3), // Impulse direction and magnitude
-          new CANNON.Vec3().copy(arrow.getAttribute('position')) // Point of application
-        );
+  
+      // Initial arrow creation
+      createArrow();
+      updateArrowsRemaining();
+  
+      function getRandomNumber(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
       }
-      if (event.code === 'KeyR') {
-        createArrow();
+  
+      // Randomly place rocks
+      function getX() {
+        let x;
+        do {
+          x = getRandomNumber(-10, 10);
+        } while (x >= -2.5 && x <= 2.5);
+        return x;
       }
-    });
-
-    // Initial arrow creation
-    createArrow();
-
-    function getRandomNumber(min, max) {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-
-    // Randomly place rocks
-    function getX() {
-      let x;
-      do {
-        x = getRandomNumber(-10, 10);
-      } while (x >= -2.5 && x <= 2.5);
-      return x;
-    }
-
-    function getY() {
-      return getRandomNumber(-40, 40);
-    }
-
-    function createRock() {
-      const rockTypes = ['box', 'tetrahedron', 'cone', 'dodecahedron', 'tetrahedron', 'torusKnot', 'octahedron', 'icosahedron'];
-      const colors = ['#808080', '#696969', '#778899', '#A9A9A9', '#B0C4DE'];
-
-      const typeIndex = Math.floor(Math.random() * rockTypes.length);
-      const colorIndex = Math.floor(Math.random() * colors.length);
-
-      const rock = document.createElement('a-entity');
-      const xx = getX();
-      const yy = getY();
-      rock.setAttribute('geometry', `primitive: ${rockTypes[typeIndex]};`);
-      rock.setAttribute('material', `color: ${colors[colorIndex]};`);
-      rock.setAttribute('position', `${xx} 0.1 ${yy};`);
-      rock.setAttribute('static-body', '');
-      rock.setAttribute('shadow', 'cast: true; receive: true');
-      rock.setAttribute('scale', '.6 .6 .6');
-
-      return rock;
-    }
-
-    function placeRocks(numRocks) {
-      const rocksContainer = document.querySelector('#rocks');
-      for (let i = 0; i < numRocks; i++) {
-        const rock = createRock();
-        rocksContainer.appendChild(rock);
+  
+      function getY() {
+        return getRandomNumber(-40, 40);
       }
-    }
-
-    placeRocks(20); // Place 20 rocks randomly
-  </script>
+  
+      function createRock() {
+        const rockTypes = ['box', 'tetrahedron', 'cone', 'dodecahedron', 'tetrahedron', 'torusKnot', 'octahedron', 'icosahedron'];
+        const colors = ['#808080', '#696969', '#778899', '#A9A9A9', '#B0C4DE'];
+  
+        const typeIndex = Math.floor(Math.random() * rockTypes.length);
+        const colorIndex = Math.floor(Math.random() * colors.length);
+  
+        const rock = document.createElement('a-entity');
+        const xx = getX();
+        const yy = getY();
+        rock.setAttribute('geometry', `primitive: ${rockTypes[typeIndex]};`);
+        rock.setAttribute('material', `color: ${colors[colorIndex]};`);
+        rock.setAttribute('position', `${xx} 0.1 ${yy};`);
+        rock.setAttribute('static-body', '');
+        rock.setAttribute('shadow', 'cast: true; receive: true');
+        rock.setAttribute('scale', '.4 .4 .6');
+  
+        return rock;
+      }
+  
+      function placeRocks(numRocks) {
+        const rocksContainer = document.querySelector('#rocks');
+        for (let i = 0; i < numRocks; i++) {
+          const rock = createRock();
+          rocksContainer.appendChild(rock);
+        }
+      }
+  
+      placeRocks(60); // Place 60 rocks randomly
+    </script>
+  </a-scene>
 </body>
 </html>
