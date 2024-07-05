@@ -9,7 +9,7 @@
       margin: 0;
       overflow: hidden;
     }
-    #scoreboard {
+    #scoreboard, #timer {
       position: absolute;
       top: 10px;
       left: 10px;
@@ -19,12 +19,58 @@
       border-radius: 5px;
       font-family: Arial, sans-serif;
     }
+    #timer {
+      top: 60px;
+    }
+    #arrows-visual {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      gap: 5px;
+    }
+    .arrow-icon {
+      width: 20px;
+      height: 60px;
+      background: brown;
+      border-radius: 2px;
+      position: relative;
+    }
+    .arrow-icon:before, .arrow-icon:after {
+      content: "";
+      position: absolute;
+      background: white;
+    }
+    .arrow-icon:before {
+      width: 8px;
+      height: 2px;
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+    }
+    .arrow-icon:after {
+      width: 8px;
+      height: 2px;
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-45deg);
+    }
   </style>
 </head>
 <body>
   <div id="scoreboard">
     <p>Score: <span id="score">0</span></p>
     <p>Arrows Remaining: <span id="arrows-remaining">5</span></p>
+  </div>
+  <div id="timer">
+    <p>Time Left: <span id="time-left">60</span> seconds</p>
+  </div>
+  <div id="arrows-visual">
+    <div class="arrow-icon"></div>
+    <div class="arrow-icon"></div>
+    <div class="arrow-icon"></div>
+    <div class="arrow-icon"></div>
+    <div class="arrow-icon"></div>
   </div>
   <a-scene physics="gravity: 0 -9.8 0" shadow="type: pcfsoft">
     <!-- Lights -->
@@ -74,215 +120,150 @@
     <!-- Shooting Mechanism -->
     <a-entity id="shooting-controller" position="0 1.6 4.5"></a-entity>
 
-    <!-- Sound Effects -->
+    <!-- Power-ups -->
+    <a-sphere id="power-up" position="5 1 -5" radius="0.5" color="yellow" dynamic-body shadow="cast: true"></a-sphere>
+
+    <!-- Obstacles -->
+    <a-box id="obstacle" position="0 1 -5" depth="0.2" height="2" width="2" color="gray" dynamic-body shadow="cast: true"></a-box>
+
+    <!-- Background Music -->
     <a-assets>
+      <audio id="background-music" src="background.mp3" autoplay loop></audio>
       <audio id="shoot-sound" src="shoot.mp3"></audio>
       <audio id="hit-sound" src="hit.mp3"></audio>
       <audio id="reload-sound" src="reload.mp3"></audio>
+      <audio id="power-up-sound" src="powerup.mp3"></audio>
     </a-assets>
+    <a-sound src="#background-music" autoplay="true" loop="true"></a-sound>
   
     <script>
       var score = 0;
       var arrowsRemaining = 5;
+      var timeLeft = 60;
+      var scoreMultiplier = 1;
   
       function updateScore(points) {
-        score += points;
+        score += points * scoreMultiplier;
         document.getElementById('score').innerText = score;
         console.log('Score updated:', score);
       }
   
       function updateArrowsRemaining() {
         document.getElementById('arrows-remaining').innerText = arrowsRemaining;
-        console.log('Arrows remaining:', arrowsRemaining);
+        var arrowsVisual = document.getElementById('arrows-visual');
+        arrowsVisual.innerHTML = '';
+        for (var i = 0; i < arrowsRemaining; i++) {
+          var arrowIcon = document.createElement('div');
+          arrowIcon.classList.add('arrow-icon');
+          arrowsVisual.appendChild(arrowIcon);
+        }
       }
   
-      function getRandomPosition() {
-        var x = Math.random() * 20 - 10;
-        var z = Math.random() * 80 - 40;
-        return { x: x, z: z };
+      function updateTimeLeft() {
+        document.getElementById('time-left').innerText = timeLeft;
       }
   
       function moveTarget() {
-        var newPosition = getRandomPosition();
-        var targetWhite = document.querySelector('#target-white');
-        var targetRed = document.querySelector('#target-red');
-        var targetBlue = document.querySelector('#target-blue');
-        var targetYellow = document.querySelector('#target-yellow');
-  
-        targetWhite.setAttribute('position', { x: newPosition.x, y: 1, z: newPosition.z });
-        targetRed.setAttribute('position', { x: newPosition.x, y: 1, z: newPosition.z + 0.01 });
-        targetBlue.setAttribute('position', { x: newPosition.x, y: 1, z: newPosition.z + 0.02 });
-        targetYellow.setAttribute('position', { x: newPosition.x, y: 1, z: newPosition.z + 0.03 });
+        var newPosition = { x: (Math.random() - 0.5) * 20, z: (Math.random() - 0.5) * 80 };
+        document.querySelector('#target-white').setAttribute('position', { x: newPosition.x, y: 1, z: newPosition.z });
+        document.querySelector('#target-red').setAttribute('position', { x: newPosition.x, y: 1, z: newPosition.z + 0.01 });
+        document.querySelector('#target-blue').setAttribute('position', { x: newPosition.x, y: 1, z: newPosition.z + 0.02 });
+        document.querySelector('#target-yellow').setAttribute('position', { x: newPosition.x, y: 1, z: newPosition.z + 0.03 });
+        console.log('Target moved to:', newPosition);
       }
   
-      function createArrow() {
-        var arrow = document.createElement('a-entity');
-        arrow.setAttribute('geometry', 'primitive: cylinder; radius: 0.03; height: 0.75');
-        arrow.setAttribute('material', 'color: brown');
-        arrow.setAttribute('rotation', '90 0 0');
-
-        var head = document.createElement('a-entity');
-        head.setAttribute('geometry', 'primitive: cone; radius-bottom: 0.05; radius-top: 0.01; height: 0.1');
-        head.setAttribute('material', 'color: gray');
-        head.setAttribute('rotation', '180 0 0');
-        head.setAttribute('position', '0 -0.55 0'); // Position the cone at the end of the cylinder
-  
-        var feather1 = document.createElement('a-entity');
-        feather1.setAttribute('geometry', 'primitive: plane; height: 0.15; width: 0.05');
-        feather1.setAttribute('material', 'color: white');
-        feather1.setAttribute('rotation', '0 0 45');
-        feather1.setAttribute('position', '0.03 0.37 0');
-  
-        var feather2 = document.createElement('a-entity');
-        feather2.setAttribute('geometry', 'primitive: plane; height: 0.15; width: 0.05');
-        feather2.setAttribute('material', 'color: white');
-        feather2.setAttribute('rotation', '0 0 -45');
-        feather2.setAttribute('position', '-0.03 0.37 0');
-  
-        var feather3 = document.createElement('a-entity');
-        feather3.setAttribute('geometry', 'primitive: plane; height: 0.15; width: 0.05');
-        feather3.setAttribute('material', 'color: white');
-        feather3.setAttribute('rotation', '0 90 -45');
-        feather3.setAttribute('position', '0 0.37 0.03');
-  
-        var feather4 = document.createElement('a-entity');
-        feather4.setAttribute('geometry', 'primitive: plane; height: 0.15; width: 0.05');
-        feather4.setAttribute('material', 'color: white');
-        feather4.setAttribute('rotation', '0 90 45');
-        feather4.setAttribute('position', '0 0.37 -0.03');
-  
-        arrow.appendChild(head);
-        arrow.appendChild(feather1);
-        arrow.appendChild(feather2);
-        arrow.appendChild(feather3);
-        arrow.appendChild(feather4);
-  
-        arrow.setAttribute('dynamic-body', 'mass: 0.1');
-        arrow.setAttribute('shadow', 'cast: true');
-  
-        arrow.addEventListener('collide', function (e) {
-          var targetId = e.detail.body.el.getAttribute('id');
-          console.log('Arrow collided with:', targetId);
-          document.querySelector('#hit-sound').play();
-  
-          if (targetId === 'target-white') {
-            updateScore(10);
-            moveTarget();
-          } else if (targetId === 'target-red') {
-            updateScore(20);
-            moveTarget();
-          } else if (targetId === 'target-blue') {
-            updateScore(30);
-            moveTarget();
-          } else if (targetId === 'target-yellow') {
-            updateScore(50);
-            moveTarget();
-          }
-  
-          // Stop the arrow's movement by setting its velocity to zero
-          arrow.body.velocity.set(0, 0, 0);
-          arrow.body.angularVelocity.set(0, 0, 0);
-          // Disable further physics interactions for the arrow
-          arrow.body.angularDamping = 1;
-          arrow.body.linearDamping = 1;
-        });
-  
-        document.querySelector('#arrows').appendChild(arrow);
-      }
-  
-      document.addEventListener('keydown', function (event) {
-        if (event.code === 'Space' && arrowsRemaining > 0) {
-          var cameraEl = document.querySelector('#camera');
-          var arrow = document.querySelector('#arrows').lastElementChild;
-  
-          if (!arrow) return;
-  
-          var cameraPosition = cameraEl.getAttribute('position');
-          var cameraRotation = cameraEl.getAttribute('rotation');
-  
-          // Set the arrow's position to the camera's position
-          arrow.setAttribute('position', cameraPosition);
-  
-          // Convert rotation to radians and calculate direction vector
-          var rotationRad = {
-            x: THREE.Math.degToRad(cameraRotation.x),
-            y: THREE.Math.degToRad(cameraRotation.y),
-            z: THREE.Math.degToRad(cameraRotation.z)
-          };
-  
-          var direction = new THREE.Vector3(
-            Math.sin(rotationRad.y) * Math.cos(rotationRad.x),
-            -Math.sin(rotationRad.x),
-            -Math.cos(rotationRad.y) * Math.cos(rotationRad.x)
-          );
-  
-          // Apply an impulse to the arrow to make it shoot forward
-          arrow.body.applyImpulse(
-            new CANNON.Vec3(-direction.x, -direction.y, direction.z).scale(3), // Impulse direction and magnitude
-            new CANNON.Vec3().copy(arrow.getAttribute('position')) // Point of application
-          );
-  
-          document.querySelector('#shoot-sound').play();
+      document.addEventListener('keydown', function(event) {
+        if (event.key === ' ' && arrowsRemaining > 0) {
           arrowsRemaining--;
           updateArrowsRemaining();
+          var arrow = document.createElement('a-entity');
+          arrow.setAttribute('geometry', {
+            primitive: 'cylinder',
+            radius: 0.02,
+            height: 0.5
+          });
+          arrow.setAttribute('material', 'color', 'brown');
+          arrow.setAttribute('position', '0 0 0');
+          arrow.setAttribute('rotation', '-90 0 0');
+          arrow.setAttribute('velocity', '0 0 -10');
+          arrow.setAttribute('dynamic-body', 'shape: cylinder; mass: 0.1');
+          arrow.setAttribute('shadow', 'cast', true);
+          document.querySelector('#arrows').appendChild(arrow);
+  
+          // Play shoot sound
+          var shootSound = document.querySelector('#shoot-sound');
+          shootSound.play();
+  
+          // Check for hits
+          arrow.addEventListener('collide', function(event) {
+            var targetId = event.detail.body.el.id;
+            if (targetId === 'target-white') {
+              updateScore(10);
+            } else if (targetId === 'target-red') {
+              updateScore(20);
+            } else if (targetId === 'target-blue') {
+              updateScore(30);
+            } else if (targetId === 'target-yellow') {
+              updateScore(50);
+            }
+            var hitSound = document.querySelector('#hit-sound');
+            hitSound.play();
+            moveTarget();
+          });
         }
-        if (event.code === 'KeyR' && arrowsRemaining > 0) {
-          document.querySelector('#reload-sound').play();
-          createArrow();
-          
+  
+        if (event.key === 'r' && arrowsRemaining === 0) {
+          arrowsRemaining = 5;
+          updateArrowsRemaining();
+          var reloadSound = document.querySelector('#reload-sound');
+          reloadSound.play();
         }
       });
-  
-      // Initial arrow creation
-      createArrow();
-      updateArrowsRemaining();
-  
-      function getRandomNumber(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-      }
-  
-      // Randomly place rocks
-      function getX() {
-        let x;
-        do {
-          x = getRandomNumber(-10, 10);
-        } while (x >= -2.5 && x <= 2.5);
-        return x;
-      }
-  
-      function getY() {
-        return getRandomNumber(-40, 40);
-      }
-  
-      function createRock() {
-        const rockTypes = ['box', 'tetrahedron', 'cone', 'dodecahedron', 'tetrahedron', 'torusKnot', 'octahedron', 'icosahedron'];
-        const colors = ['#808080', '#696969', '#778899', '#A9A9A9', '#B0C4DE'];
-  
-        const typeIndex = Math.floor(Math.random() * rockTypes.length);
-        const colorIndex = Math.floor(Math.random() * colors.length);
-  
-        const rock = document.createElement('a-entity');
-        const xx = getX();
-        const yy = getY();
-        rock.setAttribute('geometry', `primitive: ${rockTypes[typeIndex]};`);
-        rock.setAttribute('material', `color: ${colors[colorIndex]};`);
-        rock.setAttribute('position', `${xx} 0.1 ${yy};`);
-        rock.setAttribute('static-body', '');
-        rock.setAttribute('shadow', 'cast: true; receive: true');
-        rock.setAttribute('scale', '.4 .4 .6');
-  
-        return rock;
-      }
-  
-      function placeRocks(numRocks) {
-        const rocksContainer = document.querySelector('#rocks');
-        for (let i = 0; i < numRocks; i++) {
-          const rock = createRock();
-          rocksContainer.appendChild(rock);
+
+      // Timer Countdown
+      setInterval(function() {
+        if (timeLeft > 0) {
+          timeLeft--;
+          updateTimeLeft();
+        } else {
+          alert('Game Over! Your score is: ' + score);
+          // Reset the game
+          score = 0;
+          arrowsRemaining = 5;
+          timeLeft = 60;
+          scoreMultiplier = 1;
+          updateScore(0);
+          updateArrowsRemaining();
+          updateTimeLeft();
         }
-      }
+      }, 1000);
+
+      // Power-up Collision
+      document.querySelector('#power-up').addEventListener('collide', function(event) {
+        var playerId = event.detail.body.el.id;
+        if (playerId === 'camera') {
+          scoreMultiplier = 2;
+          var powerUpSound = document.querySelector('#power-up-sound');
+          powerUpSound.play();
+          setTimeout(function() {
+            scoreMultiplier = 1;
+          }, 10000); // Power-up lasts for 10 seconds
+          // Move the power-up to a new position
+          var newPosition = { x: (Math.random() - 0.5) * 20, y: 1, z: (Math.random() - 0.5) * 80 };
+          document.querySelector('#power-up').setAttribute('position', newPosition);
+        }
+      });
+
+      // Obstacle Movement
+      setInterval(function() {
+        var obstacle = document.querySelector('#obstacle');
+        var newPos = { x: (Math.random() - 0.5) * 20, y: 1, z: (Math.random() - 0.5) * 80 };
+        obstacle.setAttribute('position', newPos);
+      }, 3000); // Move obstacle every 3 seconds
   
-      placeRocks(60); // Place 60 rocks randomly
+      updateScore(0);
+      updateArrowsRemaining();
+      updateTimeLeft();
     </script>
   </a-scene>
 </body>
