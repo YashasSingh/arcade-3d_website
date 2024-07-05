@@ -126,6 +126,9 @@
     <!-- Obstacles -->
     <a-box id="obstacle" position="0 1 -5" depth="0.2" height="2" width="2" color="gray" dynamic-body shadow="cast: true"></a-box>
 
+    <!-- Arrow Refill -->
+    <a-box id="arrow-refill" position="0 1 0" depth="0.5" height="0.5" width="0.5" color="blue" dynamic-body shadow="cast: true"></a-box>
+
     <!-- Background Music -->
     <a-assets>
       <audio id="background-music" src="background.mp3" autoplay loop></audio>
@@ -141,6 +144,7 @@
       var arrowsRemaining = 5;
       var timeLeft = 60;
       var scoreMultiplier = 1;
+      var refillCollected = false;
   
       function updateScore(points) {
         score += points * scoreMultiplier;
@@ -212,8 +216,9 @@
           });
         }
   
-        if (event.key === 'r' && arrowsRemaining === 0) {
+        if (event.key === 'r' && arrowsRemaining === 0 && refillCollected) {
           arrowsRemaining = 5;
+          refillCollected = false;
           updateArrowsRemaining();
           var reloadSound = document.querySelector('#reload-sound');
           reloadSound.play();
@@ -232,6 +237,7 @@
           arrowsRemaining = 5;
           timeLeft = 60;
           scoreMultiplier = 1;
+          refillCollected = false;
           updateScore(0);
           updateArrowsRemaining();
           updateTimeLeft();
@@ -261,6 +267,27 @@
         obstacle.setAttribute('position', newPos);
       }, 3000); // Move obstacle every 3 seconds
   
+      // Arrow Refill Movement
+      setInterval(function() {
+        var arrowRefill = document.querySelector('#arrow-refill');
+        var newPos = { x: (Math.random() - 0.5) * 20, y: 1, z: (Math.random() - 0.5) * 80 };
+        arrowRefill.setAttribute('position', newPos);
+      }, 10000); // Move arrow refill every 10 seconds
+
+      // Arrow Refill Collision
+      document.querySelector('#arrow-refill').addEventListener('collide', function(event) {
+        var playerId = event.detail.body.el.id;
+        if (playerId === 'camera') {
+          refillCollected = true;
+          alert('Arrow refill collected! Press "R" to reload arrows.');
+          var reloadSound = document.querySelector('#reload-sound');
+          reloadSound.play();
+          // Move the arrow refill to a new position
+          var newPosition = { x: (Math.random() - 0.5) * 20, y: 1, z: (Math.random() - 0.5) * 80 };
+          document.querySelector('#arrow-refill').setAttribute('position', newPosition);
+        }
+      });
+
       updateScore(0);
       updateArrowsRemaining();
       updateTimeLeft();
