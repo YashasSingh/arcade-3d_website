@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Survival Mode - Grass Plot with Archery Game</title>
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js"></script>
+  <script src="https://unpkg.com/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+  <div id="scoreboard">
+    <p>Score: <span id="score">0</span></p>
+    <p>Arrows Remaining: <span id="arrows-remaining">5</span></p>
+    <p>Health: <span id="health">100</span></p>
+    <p>Coins: <span id="coins">0</span></p>
+  </div>
+  <div id="timer">
+    <p>Time Left: <span id="time-left">60</span> seconds</p>
+  </div>
+  <div id="arrows-visual">
+    <div class="arrow-icon"></div>
+    <div class="arrow-icon"></div>
+    <div class="arrow-icon"></div>
+    <div class="arrow-icon"></div>
+    <div class="arrow-icon"></div>
+  </div>
