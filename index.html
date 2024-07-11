@@ -101,7 +101,7 @@
     </a-entity>
 
     <!-- Sky -->
-    <a-sky color="#87CEEB"></a-sky>
+    <a-sky color="#87CEEB" id="sky"></a-sky>
 
     <!-- Camera -->
     <a-entity id="camera" camera position="0 1.6 5" wasd-controls="acceleration: 25" look-controls="pointerLockEnabled: true">
@@ -126,8 +126,8 @@
     <!-- Obstacles -->
     <a-box id="obstacle" position="0 1 -5" depth="0.2" height="2" width="2" color="gray" dynamic-body shadow="cast: true"></a-box>
 
-    <!-- Arrow Refill -->
-    <a-box id="arrow-refill" position="0 1 0" depth="0.5" height="0.5" width="0.5" color="blue" dynamic-body shadow="cast: true"></a-box>
+    <!-- Random Arrow Refill -->
+    <a-box id="arrow-refill" position="-5 1 -15" depth="0.5" height="0.5" width="0.5" color="green" dynamic-body shadow="cast: true"></a-box>
 
     <!-- Background Music -->
     <a-assets>
@@ -136,6 +136,8 @@
       <audio id="hit-sound" src="hit.mp3"></audio>
       <audio id="reload-sound" src="reload.mp3"></audio>
       <audio id="power-up-sound" src="powerup.mp3"></audio>
+      <audio id="refill-sound" src="refill.mp3"></audio>
+      <audio id="special-effect-sound" src="special.mp3"></audio>
     </a-assets>
     <a-sound src="#background-music" autoplay="true" loop="true"></a-sound>
   
@@ -144,14 +146,14 @@
       var arrowsRemaining = 5;
       var timeLeft = 60;
       var scoreMultiplier = 1;
-      var refillCollected = false;
-  
+      var currentLevel = 1;
+
       function updateScore(points) {
         score += points * scoreMultiplier;
         document.getElementById('score').innerText = score;
-        console.log('Score updated:', score);
+        playSpecialEffect(points);
       }
-  
+
       function updateArrowsRemaining() {
         document.getElementById('arrows-remaining').innerText = arrowsRemaining;
         var arrowsVisual = document.getElementById('arrows-visual');
@@ -162,11 +164,11 @@
           arrowsVisual.appendChild(arrowIcon);
         }
       }
-  
+
       function updateTimeLeft() {
         document.getElementById('time-left').innerText = timeLeft;
       }
-  
+
       function moveTarget() {
         var newPosition = { x: (Math.random() - 0.5) * 20, z: (Math.random() - 0.5) * 80 };
         document.querySelector('#target-white').setAttribute('position', { x: newPosition.x, y: 1, z: newPosition.z });
@@ -175,7 +177,24 @@
         document.querySelector('#target-yellow').setAttribute('position', { x: newPosition.x, y: 1, z: newPosition.z + 0.03 });
         console.log('Target moved to:', newPosition);
       }
-  
+
+      function playSpecialEffect(points) {
+        var specialEffectSound = document.querySelector('#special-effect-sound');
+        specialEffectSound.play();
+        if (points >= 50) {
+          var hitEffect = document.createElement('a-entity');
+          hitEffect.setAttribute('geometry', {
+            primitive: 'sphere',
+            radius: 1
+          });
+          hitEffect.setAttribute('material', 'color', 'gold; opacity: 0.5');
+          hitEffect.setAttribute('position', '0 1 -10');
+          hitEffect.setAttribute('dynamic-body', 'shape: sphere; mass: 0.1');
+          hitEffect.setAttribute('animation', 'property: scale; to: 0 0 0; dur: 1000; easing: easeInOutCubic');
+          document.querySelector('a-scene').appendChild(hitEffect);
+        }
+      }
+
       document.addEventListener('keydown', function(event) {
         if (event.key === ' ' && arrowsRemaining > 0) {
           arrowsRemaining--;
@@ -193,11 +212,11 @@
           arrow.setAttribute('dynamic-body', 'shape: cylinder; mass: 0.1');
           arrow.setAttribute('shadow', 'cast', true);
           document.querySelector('#arrows').appendChild(arrow);
-  
+
           // Play shoot sound
           var shootSound = document.querySelector('#shoot-sound');
           shootSound.play();
-  
+
           // Check for hits
           arrow.addEventListener('collide', function(event) {
             var targetId = event.detail.body.el.id;
@@ -215,10 +234,9 @@
             moveTarget();
           });
         }
-  
-        if (event.key === 'r' && arrowsRemaining === 0 && refillCollected) {
+
+        if (event.key === 'r' && arrowsRemaining === 0) {
           arrowsRemaining = 5;
-          refillCollected = false;
           updateArrowsRemaining();
           var reloadSound = document.querySelector('#reload-sound');
           reloadSound.play();
@@ -232,12 +250,14 @@
           updateTimeLeft();
         } else {
           alert('Game Over! Your score is: ' + score);
+          // Save high score
+          saveHighScore();
           // Reset the game
           score = 0;
           arrowsRemaining = 5;
           timeLeft = 60;
           scoreMultiplier = 1;
-          refillCollected = false;
+          currentLevel = 1;
           updateScore(0);
           updateArrowsRemaining();
           updateTimeLeft();
@@ -266,27 +286,59 @@
         var newPos = { x: (Math.random() - 0.5) * 20, y: 1, z: (Math.random() - 0.5) * 80 };
         obstacle.setAttribute('position', newPos);
       }, 3000); // Move obstacle every 3 seconds
-  
-      // Arrow Refill Movement
-      setInterval(function() {
-        var arrowRefill = document.querySelector('#arrow-refill');
-        var newPos = { x: (Math.random() - 0.5) * 20, y: 1, z: (Math.random() - 0.5) * 80 };
-        arrowRefill.setAttribute('position', newPos);
-      }, 10000); // Move arrow refill every 10 seconds
 
       // Arrow Refill Collision
       document.querySelector('#arrow-refill').addEventListener('collide', function(event) {
         var playerId = event.detail.body.el.id;
         if (playerId === 'camera') {
-          refillCollected = true;
-          alert('Arrow refill collected! Press "R" to reload arrows.');
-          var reloadSound = document.querySelector('#reload-sound');
-          reloadSound.play();
+          arrowsRemaining = 5;
+          updateArrowsRemaining();
+          var refillSound = document.querySelector('#refill-sound');
+          refillSound.play();
           // Move the arrow refill to a new position
           var newPosition = { x: (Math.random() - 0.5) * 20, y: 1, z: (Math.random() - 0.5) * 80 };
           document.querySelector('#arrow-refill').setAttribute('position', newPosition);
         }
       });
+
+      // Save High Score
+      function saveHighScore() {
+        var highScores = JSON.parse(localStorage.getItem('highScores')) || [];
+        highScores.push(score);
+        highScores.sort(function(a, b) { return b - a });
+        highScores = highScores.slice(0, 5); // Keep top 5 scores
+        localStorage.setItem('highScores', JSON.stringify(highScores));
+        displayLeaderboard();
+      }
+
+      // Display Leaderboard
+      function displayLeaderboard() {
+        var highScores = JSON.parse(localStorage.getItem('highScores')) || [];
+        var leaderboard = 'Leaderboard:\n';
+        for (var i = 0; i < highScores.length; i++) {
+          leaderboard += (i + 1) + '. ' + highScores[i] + '\n';
+        }
+        alert(leaderboard);
+      }
+
+      // Move to Next Level
+      function moveToNextLevel() {
+        currentLevel++;
+        alert('Level ' + currentLevel);
+        // Increase difficulty
+        var newSpeed = -10 - (currentLevel * 2);
+        var arrows = document.querySelectorAll('#arrows > a-entity');
+        arrows.forEach(function(arrow) {
+          arrow.setAttribute('velocity', '0 0 ' + newSpeed);
+        });
+      }
+
+      // Change Weather Conditions
+      setInterval(function() {
+        var weatherConditions = ['#87CEEB', '#B0E0E6', '#778899'];
+        var randomWeather = weatherConditions[Math.floor(Math.random() * weatherConditions.length)];
+        document.querySelector('#sky').setAttribute('color', randomWeather);
+      }, 15000); // Change weather every 15 seconds
 
       updateScore(0);
       updateArrowsRemaining();
