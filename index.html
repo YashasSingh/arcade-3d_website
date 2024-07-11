@@ -75,7 +75,8 @@
         <a-entity geometry="primitive: plane; height: 0.01; width: 0.1" material="color: red; shader: flat" position="0 0 0"></a-entity>
         <a-entity geometry="primitive: plane; height: 0.1; width: 0.01" material="color: red; shader: flat" position="0 0 0"></a-entity>
       </a-entity>
-      
+      <a-sphere id="shield-power-up" position="-1 1 -5" radius="0.5" color="green" dynamic-body shadow="cast: true"></a-sphere>
+
       <!-- Arrows -->
       <a-entity id="arrows" position="0 0 -1"></a-entity>
     </a-entity>
@@ -84,27 +85,13 @@
     <a-entity id="shooting-controller" position="0 1.6 4.5"></a-entity>
 
     <!-- Power-ups -->
-    <a-sphere id="power-up" position="2 1 -5" radius="0.5" color="gold" dynamic-body shadow="cast: true"></a-sphere>
-    <a-box id="arrow-refill" position="-2 1 -5" depth="0.5" height="0.5" width="0.5" color="green" dynamic-body shadow="cast: true"></a-box>
-    <a-entity id="obstacle" geometry="primitive: box; depth: 1; height: 2; width: 1" material="color: #8B4513" position="5 1 -20" dynamic-body shadow="cast: true"></a-entity>
-
-    <!-- Audio -->
-    <a-assets>
-      <audio id="shoot-sound" src="shoot.mp3"></audio>
-      <audio id="hit-sound" src="hit.mp3"></audio>
-      <audio id="power-up-sound" src="power-up.mp3"></audio>
-      <audio id="reload-sound" src="reload.mp3"></audio>
-      <audio id="special-effect-sound" src="special-effect.mp3"></audio>
-      <audio id="background-music" src="background-music.mp3" autoplay loop></audio>
-      <audio id="bonus-appear-sound" src="bonus-appear.mp3"></audio>
-      <audio id="bonus-hit-sound" src="bonus-hit.mp3"></audio>
-    </a-assets>
-    <a-sound src="#background-music" autoplay="true" loop="true" volume="0.5"></a-sound>
-
-    <!-- Wind Indicator -->
-    <a-entity id="wind-indicator" geometry="primitive: plane; height: 0.2; width: 1" material="color: blue" position="0 3 0" rotation="0 0 0"></a-entity>
+    <a-sphere id="power-up" position="2 1 -5" radius="0.5" color="blue" dynamic-body shadow="cast: true"></a-sphere>
+    <a-sphere id="double-score-power-up" position="3 1 -5" radius="0.5" color="yellow" dynamic-body shadow="cast: true"></a-sphere>
     
-    <script src="scripts.js"></script>
+    <!-- Audio -->
+    <a-sound id="arrow-hit-sound" src="arrow-hit.mp3"></a-sound>
+    <a-sound id="background-music" src="background-music.mp3" autoplay="true" loop="true" volume="0.5"></a-sound>
   </a-scene>
+  <script src="script.js"></script>
 </body>
 </html>
