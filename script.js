@@ -3,6 +3,9 @@ let arrowsRemaining = 5;
 let gameTime = 60;
 let bonusTargetInterval;
 let bonusTargetDuration = 5; // Duration in seconds for which the bonus target appears
+let doubleScoreActive = false;
+let doubleScoreDuration = 10; // Duration in seconds for double score
+let doubleScoreTimeout;
 
 document.addEventListener('DOMContentLoaded', () => {
   const scoreElement = document.getElementById('score');
@@ -11,8 +14,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const bonusTarget = document.getElementById('bonus-target');
   const bonusAppearSound = document.getElementById('bonus-appear-sound');
   const bonusHitSound = document.getElementById('bonus-hit-sound');
+  const doubleScorePowerUp = document.getElementById('double-score');
+  const specialEffectSound = document.getElementById('special-effect-sound');
 
   function updateScore(points) {
+    if (doubleScoreActive) {
+      points *= 2;
+    }
     score += points;
     scoreElement.textContent = score;
   }
@@ -57,11 +65,28 @@ document.addEventListener('DOMContentLoaded', () => {
     bonusTargetInterval = setInterval(showBonusTarget, Math.random() * 10000 + 5000);
   }
 
+  doubleScorePowerUp.addEventListener('collide', (e) => {
+    if (e.detail.body.el.id === 'arrows') {
+      activateDoubleScore();
+      specialEffectSound.play();
+      doubleScorePowerUp.setAttribute('visible', 'false');
+      setTimeout(() => {
+        doubleScorePowerUp.setAttribute('visible', 'true');
+      }, 20000); // Reappear after 20 seconds
+    }
+  });
+
+  function activateDoubleScore() {
+    doubleScoreActive = true;
+    clearTimeout(doubleScoreTimeout);
+    doubleScoreTimeout = setTimeout(() => {
+      doubleScoreActive = false;
+    }, doubleScoreDuration * 1000);
+  }
+
   // Initialize game elements
   startGameTimer();
   initBonusTarget();
 
   // Event listeners for other game elements...
 });
-
-// Additional functionalities for shooting, hitting targets, collecting power-ups, etc.
