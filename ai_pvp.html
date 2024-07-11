@@ -87,6 +87,19 @@
               const targetPosition = target.getAttribute('position');
               const direction = new THREE.Vector3().subVectors(targetPosition, shooter.getAttribute('position')).normalize();
               newArrow.setAttribute('direction', `${direction.x} ${direction.y} ${direction.z}`);
+              const shootPlayerArrow = () => {
+                if (arrowsRemaining > 0) {
+                  shootArrow(player, ai); // Use the same shootArrow function
+                  arrowsRemaining--;
+                  updateArrowsRemaining();
+                }
+              };
+              // Update Arrows Remaining UI
+              const updateArrowsRemaining = () => {
+                document.getElementById("arrows-remaining").innerText = arrowsRemaining;
+              };
+              // Event Listener for Player Shooting
+              document.addEventListener('click', shootPlayerArrow); 
               // Add the arrow to the scene
               document.querySelector('a-scene').appendChild(newArrow);
               // Make the arrow fly towards the target
