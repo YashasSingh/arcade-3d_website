@@ -63,3 +63,6 @@ body {
   50% { transform: translateX(10px); }
   100% { transform: translateX(-10px); }
 }
+#slow-power-up {
+  /* Optional styles for the power-up idk ill do smt*/
+}

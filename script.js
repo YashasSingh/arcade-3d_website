@@ -8,6 +8,9 @@ let doubleScoreDuration = 10; // Duration in seconds for double score
 let doubleScoreTimeout;
 let movingObstacleInterval;
 let obstacleSpeed = 0.05; // Speed of the moving obstacle
+let slowPowerUpInterval;
+let slowEffectDuration = 5; // Duration in seconds for the slow effect
+let originalObstacleSpeed = obstacleSpeed;
 
 document.addEventListener('DOMContentLoaded', () => {
   const scoreElement = document.getElementById('score');
@@ -19,10 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const doubleScorePowerUp = document.getElementById('double-score');
   const specialEffectSound = document.getElementById('special-effect-sound');
   const movingObstacle = document.getElementById('moving-obstacle');
-  const arrowPickup = document.getElementById('arrow-pickup');
-  const arrowPickup2 = document.getElementById('arrow-pickup-2');
-  const obstacle = document.getElementById('obstacle');
-  const arrowRefill = document.getElementById('arrow-refill');
+  const slowPowerUp = document.getElementById('slow-power-up');
 
   function updateScore(points) {
     if (doubleScoreActive) {
@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(gameTimer);
         clearInterval(bonusTargetInterval);
         clearInterval(movingObstacleInterval);
+        clearInterval(slowPowerUpInterval);
         alert('Game Over! Your score: ' + score);
         return;
       }
@@ -107,36 +108,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 50); // Update position every 50ms
   }
 
-  obstacle.addEventListener('collide', (e) => {
-    if (e.detail.body.el.id === 'camera') {
-      updateScore(-20); // Deduct points if the camera collides with the obstacle
-      specialEffectSound.play();
-      // Move obstacle to a new position after collision
-      obstacle.setAttribute('position', {
-        x: Math.random() * 20 - 10,
-        y: 1,
-        z: Math.random() * 80 - 40
-      });
+  function showSlowPowerUp() {
+    slowPowerUp.setAttribute('visible', 'true');
+    slowPowerUp.setAttribute('position', `${Math.random() * 4 - 2} 1 -${Math.floor(Math.random() * 10) + 5}`);
+
+    setTimeout(() => {
+      slowPowerUp.setAttribute('visible', 'false');
+    }, 5000); // Disappear after 5 seconds
+  }
+
+  slowPowerUp.addEventListener('collide', (e) => {
+    if (e.detail.body.el.id === 'arrows') {
+      activateSlowEffect();
+      slowPowerUp.setAttribute('visible', 'false');
     }
   });
 
-  arrowRefill.addEventListener('collide', (e) => {
-    if (e.detail.body.el.id === 'camera') {
-      updateArrowsRemaining(5); // Replenish arrows if the camera collides with the arrow refill
-      arrowPickup.play();
-      // Move arrow refill to a new position after collection
-      arrowRefill.setAttribute('position', {
-        x: Math.random() * 20 - 10,
-        y: 1,
-        z: Math.random() * 80 - 40
-      });
-    }
-  });
+  function activateSlowEffect() {
+    obstacleSpeed = originalObstacleSpeed / 2; // Slow down the obstacle
+    setTimeout(() => {
+      obstacleSpeed = originalObstacleSpeed; // Restore original speed after effect duration
+    }, slowEffectDuration * 1000);
+  }
+
+  function initSlowPowerUp() {
+    slowPowerUpInterval = setInterval(showSlowPowerUp, Math.random() * 20000 + 10000); // Appear every 10-30 seconds
+  }
 
   // Initialize game elements
   startGameTimer();
   initBonusTarget();
   moveObstacle();
+  initSlowPowerUp();
 
   // Event listeners for other game elements...
 });
