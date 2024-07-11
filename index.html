@@ -2,10 +2,9 @@
 <html>
 <head>
   <title>Grass Plot with Archery Game</title>
-  <link rel="stylesheet" type="text/css" href="styles.css">
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
-  <script src="scripts.js" defer></script>
+  <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
   <div id="scoreboard">
@@ -42,6 +41,9 @@
     <a-cylinder id="target-red" position="0 1 -9.99" rotation="90 0 0" radius="1.1" height="0.001" color="red" static-body shadow="cast: true"></a-cylinder>
     <a-cylinder id="target-blue" position="0 1 -9.98" rotation="90 0 0" radius="0.6" height="0.001" color="blue" static-body shadow="cast: true"></a-cylinder>
     <a-cylinder id="target-yellow" position="0 1 -9.97" rotation="90 0 0" radius="0.3" height="0.001" color="yellow" static-body shadow="cast: true"></a-cylinder>
+
+    <!-- Bonus Target -->
+    <a-sphere id="bonus-target" position="0 1 -15" radius="0.5" color="purple" visible="false" dynamic-body shadow="cast: true"></a-sphere>
 
     <!-- Rocks -->
     <a-entity id="rocks"></a-entity>
@@ -87,11 +89,15 @@
       <audio id="reload-sound" src="reload.mp3"></audio>
       <audio id="special-effect-sound" src="special-effect.mp3"></audio>
       <audio id="background-music" src="background-music.mp3" autoplay loop></audio>
+      <audio id="bonus-appear-sound" src="bonus-appear.mp3"></audio>
+      <audio id="bonus-hit-sound" src="bonus-hit.mp3"></audio>
     </a-assets>
     <a-sound src="#background-music" autoplay="true" loop="true" volume="0.5"></a-sound>
 
     <!-- Wind Indicator -->
     <a-entity id="wind-indicator" geometry="primitive: plane; height: 0.2; width: 1" material="color: blue" position="0 3 0" rotation="0 0 0"></a-entity>
+    
+    <script src="scripts.js"></script>
   </a-scene>
 </body>
 </html>
