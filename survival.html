@@ -26,3 +26,55 @@
     <div class="arrow-icon"></div>
     <div class="arrow-icon"></div>
   </div>
+  <div id="sound-controls">
+    <p>Sound Effects: <input type="range" id="sfx-volume" min="0" max="1" step="0.1" value="0.5"></p>
+    <p>Music: <input type="range" id="music-volume" min="0" max="1" step="0.1" value="0.5"></p>
+  </div>
+
+  <a-scene physics="gravity: 0 -9.8 0" shadow="type: pcfsoft">
+    <!-- Lights -->
+    <a-light type="directional" position="0 10 0" intensity="0.8" castShadow="true" shadow-mapWidth="2048" shadow-mapHeight="2048"></a-light>
+    <a-light type="ambient" color="#ffffff" intensity="0.4"></a-light>
+
+    <!-- Grass Plot -->
+    <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="80" material="color: #7BC8A4; repeat: 20 20" static-body shadow="receive: true"></a-plane>
+
+    <!-- Archery Target -->
+    <a-cylinder id="target-white" position="0 1 -10" rotation="90 0 0" radius="1.5" height="0.001" color="white" static-body shadow="cast: true"></a-cylinder> 
+    <a-cylinder id="target-red" position="0 1 -9.99" rotation="90 0 0" radius="1.1" height="0.001" color="red" static-body shadow="cast: true"></a-cylinder>
+    <a-cylinder id="target-blue" position="0 1 -9.98" rotation="90 0 0" radius="0.6" height="0.001" color="blue" static-body shadow="cast: true"></a-cylinder>
+    <a-cylinder id="target-yellow" position="0 1 -9.97" rotation="90 0 0" radius="0.3" height="0.001" color="yellow" static-body shadow="cast: true"></a-cylinder>
+
+    <!-- Bonus Target -->
+    <a-sphere id="bonus-target" position="0 1 -15" radius="0.5" color="purple" visible="false" dynamic-body shadow="cast: true"></a-sphere>
+
+    <!-- Rocks -->
+    <a-entity id="rocks"></a-entity>
+     <!-- Fence -->
+      <a-entity position="-10 0 0">
+        <a-entity geometry="primitive: box; width: 0.2; height: 1; depth: 80" material="color: brown" position="0 0.5 0" static-body shadow="cast: true"></a-entity>
+        <a-entity geometry="primitive: box; width: 0.2; height: 1; depth: 80" material="color: brown" position="20 0.5 0" static-body shadow="cast: true"></a-entity>
+        <a-entity geometry="primitive: box; width: 0.2; height: 20; depth: 1" material="color: brown" position="10 0.5 -40" rotation="90 0 90" static-body shadow="cast: true"></a-entity>
+        <a-entity geometry="primitive: box; width: 0.2; height: 20; depth: 1" material="color: brown" position="10 0.5 40" rotation="90 0 90" static-body shadow="cast: true"></a-entity>
+      </a-entity>
+      <a-box id="moving-obstacle" position="0 1 -5" depth="1" height="1" width="1" color="red" dynamic-body shadow="cast: true"></a-box>
+
+      <a-sphere id="arrow-pickup" position="2 1 -15" radius="0.3" color="green" dynamic-body shadow="cast: true"></a-sphere>
+      <a-sphere id="arrow-pickup-2" position="-5 1 -25" radius="0.3" color="green" dynamic-body shadow="cast: true"></a-sphere>
+      <a-box id="obstacle" position="5 1 -20" depth="1" height="2" width="1" color="#8B4513" dynamic-body shadow="cast: true"></a-box>
+      <a-box id="arrow-refill" position="-2 1 -5" depth="0.5" height="0.5" width="0.5" color="green" dynamic-body shadow="cast: true"></a-box>
+      <a-sphere id="slow-power-up" position="1 1 -5" radius="0.5" color="blue" dynamic-body shadow="cast: true"></a-sphere>
+
+      <!-- Sky -->
+      <a-sky color="#87CEEB" id="sky"></a-sky>
+
+      <!-- Camera -->
+      <a-entity id="camera" camera position="0 1.6 5" wasd-controls="acceleration: 25" look-controls="pointerLockEnabled: true">
+        <a-cursor color="#FF0000"></a-cursor>
+        <!-- Crosshair -->
+        <a-entity position="0 0 -1">
+          <a-ring geometry="primitive: ring; radius-inner: 0.04; radius-outer: 0.05" material="color: red; shader: flat"></a-ring>
+          <a-entity geometry="primitive: plane; height: 0.01; width: 0.1" material="color: red; shader: flat" position="0 0 0"></a-entity>
+          <a-entity geometry="primitive: plane; height: 0.1; width: 0.01" material="color: red; shader: flat" position="0 0 0"></a-entity>
+        </a-entity>
+        <a-sphere id="shield-power-up" position="-1 1 -5" radius="0.5" color="green" dynamic-body shadow="cast: true"></a-sphere>
