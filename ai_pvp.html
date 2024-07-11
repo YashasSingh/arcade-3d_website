@@ -131,6 +131,47 @@
                       console.log("AI arrow hit player!");
                     }
                   });
+              const shootPlayerArrow = () => {
+                if (arrowsRemaining > 0) {
+                  // Create a new arrow entity
+                  const newArrow = document.createElement('a-entity');
+                  newArrow.setAttribute('id', 'player-arrow');
+                  newArrow.setAttribute('geometry', 'primitive: box; width: 0.2; height: 1');
+                  newArrow.setAttribute('material', 'color: #000000');
+                  newArrow.setAttribute('dynamic-body', 'mass: 0.1');
+                  newArrow.setAttribute('position', camera.getAttribute('position'));
+                  newArrow.setAttribute('visible', true);
+                  // Set the arrow's direction based on camera's forward direction
+                  const direction = camera.object3D.getWorldDirection(new THREE.Vector3());
+                  newArrow.setAttribute('direction', `${direction.x} ${direction.y} ${direction.z}`);
+                  // Add the arrow to the scene
+                  document.querySelector('a-scene').appendChild(newArrow);
+                  // Make the arrow fly forward
+                  gsap.to(newArrow.object3D.position, {
+                    x: newArrow.object3D.position.x + direction.x * 10,
+                    y: newArrow.object3D.position.y + direction.y * 10,
+                    z: newArrow.object3D.position.z + direction.z * 10,
+                    duration: 2,
+                    onComplete: () => {
+                      newArrow.remove();
+                    }
+                  });
+                  arrowsRemaining--;
+                  updateArrowsRemaining();
+                }
+              };
+              // Update Arrows Remaining UI
+              const updateArrowsRemaining = () => {
+                document.getElementById("arrows-remaining").innerText = arrowsRemaining;
+              };
+              // Event Listener for Player Shooting
+              document.addEventListener('click', shootPlayerArrow); 
+              // Collision handling 
+              document.addEventListener('collide', (event) => {
+                if (event.detail.body.el.id === 'ai-arrow' && event.detail.targetEl.id === 'player') {
+                  // Handle AI arrow collision with player
+                  console.log("AI arrow hit player!");
+                } else if (event.detail.body.el.id === 'player-arrow' && event.detail.targetEl.id === 'ai') {
                 </script>
               </a-scene>
             </body>
