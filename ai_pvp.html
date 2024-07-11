@@ -100,6 +100,23 @@
                 }
               });
             };
+            // Event Listener for Player Shooting
+            document.addEventListener('click', shootPlayerArrow); 
+            // Collision handling 
+            document.addEventListener('collide', (event) => {
+              if (event.detail.body.el.id === 'ai-arrow' && event.detail.targetEl.id === 'player') {
+                playerHealth -= 10;
+                updatePlayerHealth();
+                console.log("AI arrow hit player!");
+              } else if (event.detail.body.el.id === 'player-arrow' && event.detail.targetEl.id === 'ai') {
+                aiHealth -= 10;
+                updateAIHealth();
+                playerScore += 10;
+                updatePlayerScore();
+                console.log("Player arrow hit AI!");
+              }
+            });
+
                 // Add the arrow to the scene
                     document.querySelector('a-scene').appendChild(newArrow);
                     // Make the arrow fly towards the player
@@ -151,6 +168,19 @@
                   });
                   arrowsRemaining--;
                   updateArrowsRemaining();
+                }
+              };
+              // Update UI functions
+              const updatePlayerHealth = () => {
+                document.getElementById("player-health").innerText = playerHealth;
+                if (playerHealth <= 0) {
+                  gameOver('AI'); // AI wins
+                }
+              };
+              const updateAIHealth = () => {
+                document.getElementById("ai-health").innerText = aiHealth;
+                if (aiHealth <= 0) {
+                  gameOver('Player'); // Player wins
                 }
               };
               // Update Arrows Remaining UI
