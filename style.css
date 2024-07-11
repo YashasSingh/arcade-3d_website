@@ -1,4 +1,68 @@
-html {
-  height: 100%;
-  width: 100%;
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+#scoreboard, #timer {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: white;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  border-radius: 5px;
+  font-family: Arial, sans-serif;
+}
+
+#timer {
+  top: 60px;
+}
+
+#arrows-visual {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 5px;
+}
+
+.arrow-icon {
+  width: 20px;
+  height: 60px;
+  background: brown;
+  border-radius: 2px;
+  position: relative;
+}
+
+.arrow-icon:before, .arrow-icon:after {
+  content: "";
+  position: absolute;
+  background: white;
+}
+
+.arrow-icon:before {
+  width: 8px;
+  height: 2px;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.arrow-icon:after {
+  width: 2px;
+  height: 20px;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+#sound-controls {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  color: white;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  border-radius: 5px;
+  font-family: Arial, sans-serif;
 }
