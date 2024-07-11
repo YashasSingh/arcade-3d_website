@@ -1,82 +1,83 @@
-/* styles.css */
-
-body {
-  font-family: Arial, sans-serif;
-}
-
-#scoreboard, #timer, #arrows-visual, #sound-controls, #leaderboard, #achievements {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 10px;
-  border-radius: 5px;
-}
-
-#timer {
-  top: 80px;
-}
-
-#arrows-visual {
-  top: 150px;
-}
-
-.arrow-icon {
-  display: inline-block;
-  width: 20px;
-  height: 40px;
-  background: url('arrow.png') no-repeat center center;
-  background-size: contain;
-}
-
-#sound-controls {
-  top: 220px;
-}
-
-#leaderboard {
-  top: 290px;
-  width: 200px;
-}
-
-#leaderboard h2 {
-  margin: 0;
-  font-size: 1.2em;
-}
-
-#leaderboard ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-#leaderboard li {
-  background-color: #ffffff;
-  margin: 5px 0;
-  padding: 5px;
-  border-radius: 3px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-}
-
-#achievements {
-  top: 360px;
-  width: 200px;
-}
-
-#achievements h2 {
-  margin: 0;
-  font-size: 1.2em;
-}
-
-#achievements ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-#achievements li {
-  background-color: #ffffff;
-  margin: 5px 0;
-  padding: 5px;
-  border-radius: 3px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-}
+  /* styles.css */
+  
+  body {
+    font-family: Arial, sans-serif;
+  }
+  
+  #scoreboard, #timer, #arrows-visual, #sound-controls, #leaderboard, #achievements {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 5px;
+  }
+  
+  #timer {
+    top: 80px;
+  }
+  
+  #arrows-visual {
+    top: 150px;
+  }
+  
+  .arrow-icon {
+    display: inline-block;
+    width: 20px;
+    height: 40px;
+    background: url('arrow.png') no-repeat center center;
+    background-size: contain;
+  }
+  
+  #sound-controls {
+    top: 220px;
+  }
+  
+  #leaderboard {
+    top: 290px;
+    width: 200px;
+  }
+  
+  #leaderboard h2 {
+    margin: 0;
+    font-size: 1.2em;
+  }
+  
+  #leaderboard ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  #leaderboard li {
+    background-color: #ffffff;
+    margin: 5px 0;
+    padding: 5px;
+    border-radius: 3px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  }
+  
+  #achievements {
+    top: 360px;
+    width: 200px;
+  }
+  
+  #achievements h2 {
+    margin: 0;
+    font-size: 1.2em;
+  }
+  
+  #achievements ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  #achievements li {
+    background-color: #ffffff;
+    margin: 5px 0;
+    padding: 5px;
+    border-radius: 3px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  }
+  _

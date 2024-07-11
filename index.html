@@ -1,106 +1,115 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Grass Plot with Archery Game</title>
-  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
-  <link rel="stylesheet" type="text/css" href="styles.css">
-</head>
-<body>
-  <div id="scoreboard">
-    <p>Score: <span id="score">0</span></p>
-    <p>Arrows Remaining: <span id="arrows-remaining">5</span></p>
-    <p>Health: <span id="health">100</span></p>
-    <p>Coins: <span id="coins">0</span></p>
-  </div>
-  <div id="timer">
-    <p>Time Left: <span id="time-left">60</span> seconds</p>
-  </div>
-  <div id="arrows-visual">
-    <div class="arrow-icon"></div>
-    <div class="arrow-icon"></div>
-    <div class="arrow-icon"></div>
-    <div class="arrow-icon"></div>
-    <div class="arrow-icon"></div>
-  </div>
-  <div id="sound-controls">
-    <p>Sound Effects: <input type="range" id="sfx-volume" min="0" max="1" step="0.1" value="0.5"></p>
-    <p>Music: <input type="range" id="music-volume" min="0" max="1" step="0.1" value="0.5"></p>
-  </div>
-  <div id="leaderboard">
-    <h2>Leaderboard</h2>
-    <ul id="leaderboard-list"></ul>
-  </div>
-  <div id="achievements">
-    <h2>Achievements</h2>
-    <ul id="achievements-list"></ul>
-  </div>
-  <a-scene physics="gravity: 0 -9.8 0" shadow="type: pcfsoft">
-    <!-- Lights -->
-    <a-light type="directional" position="0 10 0" intensity="0.8" castShadow="true" shadow-mapWidth="2048" shadow-mapHeight="2048"></a-light>
-    <a-light type="ambient" color="#ffffff" intensity="0.4"></a-light>
+document.addEventListener("DOMContentLoaded", function() {
+  let score = 0;
+  let arrowsRemaining = 5;
+  let health = 100;
+  let coins = 0;
+  let timeLeft = 60;
+  let gameTimer = null;
+  let bonusTarget = document.getElementById("bonus-target");
+  let targetRed = document.getElementById("target-red");
+  let slowMotionActive = false;
+  let shieldActive = false;
 
-    <!-- Grass Plot -->
-    <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="80" material="color: #7BC8A4; repeat: 20 20" static-body shadow="receive: true"></a-plane>
+  const initPowerUps = () => {
+    const arrowPickup = document.getElementById("arrow-pickup");
+    const arrowPickup2 = document.getElementById("arrow-pickup-2");
+    const slowPowerUp = document.getElementById("slow-power-up");
+    const shieldPowerUp = document.getElementById("shield-power-up");
 
-    <!-- Gravel Path -->
-    <a-plane position="0 0.01 0" rotation="-90 0 0" width="5" height="80" material="color: #A9A9A9; repeat: 2 20" static-body shadow="receive: true"></a-plane>
-    
-    <!-- Archery Target -->
-    <a-cylinder id="target-white" position="0 1 -10" rotation="90 0 0" radius="1.5" height="0.001" color="white" static-body shadow="cast: true"></a-cylinder> 
-    <a-cylinder id="target-red" position="0 1 -9.99" rotation="90 0 0" radius="1.1" height="0.001" color="red" static-body shadow="cast: true"></a-cylinder>
-    <a-cylinder id="target-blue" position="0 1 -9.98" rotation="90 0 0" radius="0.6" height="0.001" color="blue" static-body shadow="cast: true"></a-cylinder>
-    <a-cylinder id="target-yellow" position="0 1 -9.97" rotation="90 0 0" radius="0.3" height="0.001" color="yellow" static-body shadow="cast: true"></a-cylinder>
+    [arrowPickup, arrowPickup2, slowPowerUp, shieldPowerUp].forEach(powerUp => {
+      powerUp.addEventListener('collide', handlePowerUpCollision);
+    });
+  };
 
-    <!-- Bonus Target -->
-    <a-sphere id="bonus-target" position="0 1 -15" radius="0.5" color="purple" visible="false" dynamic-body shadow="cast: true"></a-sphere>
+  const handlePowerUpCollision = (event) => {
+    const powerUp = event.target;
 
-    <!-- Rocks -->
-    <a-entity id="rocks"></a-entity>
+    switch (powerUp.id) {
+      case 'arrow-pickup':
+      case 'arrow-pickup-2':
+        arrowsRemaining += 3;
+        updateArrowsRemaining();
+        powerUp.setAttribute('visible', false);
+        break;
+      case 'slow-power-up':
+        slowMotionActive = true;
+        gsap.to("#target-red", { scale: 2, duration: 0.5, yoyo: true, repeat: 1 });
+        setTimeout(() => { slowMotionActive = false; }, 5000);
+        powerUp.setAttribute('visible', false);
+        break;
+      case 'shield-power-up':
+        shieldActive = true;
+        gsap.to("#target-blue", { scale: 2, duration: 0.5, yoyo: true, repeat: 1 });
+        setTimeout(() => { shieldActive = false; }, 5000);
+        powerUp.setAttribute('visible', false);
+        break;
+    }
+  };
 
-    <!-- Fence -->
-    <a-entity position="-10 0 0">
-      <a-entity geometry="primitive: box; width: 0.2; height: 1; depth: 80" material="color: brown" position="0 0.5 0" static-body shadow="cast: true"></a-entity>
-      <a-entity geometry="primitive: box; width: 0.2; height: 1; depth: 80" material="color: brown" position="20 0.5 0" static-body shadow="cast: true"></a-entity>
-      <a-entity geometry="primitive: box; width: 0.2; height: 20; depth: 1" material="color: brown" position="10 0.5 -40" rotation="90 0 90" static-body shadow="cast: true"></a-entity>
-      <a-entity geometry="primitive: box; width: 0.2; height: 20; depth: 1" material="color: brown" position="10 0.5 40" rotation="90 0 90" static-body shadow="cast: true"></a-entity>
-    </a-entity>
-    <a-box id="moving-obstacle" position="0 1 -5" depth="1" height="1" width="1" color="red" dynamic-body shadow="cast: true"></a-box>
+  const initGameElements = () => {
+    bonusTarget.setAttribute('visible', false);
+    resetTimer();
+    startGameTimer();
+    moveObstacle();
+    activateBonusTarget();
+    activateDoubleScorePowerUp();
+    initPowerUps();
+    updateScore();
+    updateArrowsRemaining();
+    updateHealth();
+    updateCoins();
+    checkAchievements();
+  };
 
-    <a-sphere id="arrow-pickup" position="2 1 -15" radius="0.3" color="green" dynamic-body shadow="cast: true"></a-sphere>
-    <a-sphere id="arrow-pickup-2" position="-5 1 -25" radius="0.3" color="green" dynamic-body shadow="cast: true"></a-sphere>
-    <a-box id="obstacle" position="5 1 -20" depth="1" height="2" width="1" color="#8B4513" dynamic-body shadow="cast: true"></a-box>
-    <a-box id="arrow-refill" position="-2 1 -5" depth="0.5" height="0.5" width="0.5" color="green" dynamic-body shadow="cast: true"></a-box>
-    <a-sphere id="slow-power-up" position="1 1 -5" radius="0.5" color="blue" dynamic-body shadow="cast: true"></a-sphere>
+  const synth = new Tone.Synth().toDestination();
+  const playSound = (note) => {
+    synth.triggerAttackRelease(note, "8n");
+  };
 
-    <!-- Sky -->
-    <a-sky color="#87CEEB" id="sky"></a-sky>
+  targetRed.addEventListener('collide', () => {
+    playSound('C4');
+    score += 10;
+    updateScore();
+  });
 
-    <!-- Camera -->
-    <a-entity id="camera" camera position="0 1.6 5" wasd-controls="acceleration: 25" look-controls="pointerLockEnabled: true">
-      <a-cursor color="#FF0000"></a-cursor>
-      <!-- Crosshair -->
-      <a-entity position="0 0 -1">
-        <a-ring geometry="primitive: ring; radius-inner: 0.04; radius-outer: 0.05" material="color: red; shader: flat"></a-ring>
-        <a-entity geometry="primitive: plane; height: 0.01; width: 0.1" material="color: red; shader: flat" position="0 0 0"></a-entity>
-        <a-entity geometry="primitive: plane; height: 0.1; width: 0.01" material="color: red; shader: flat" position="0 0 0"></a-entity>
-      </a-entity>
-      <a-sphere id="shield-power-up" position="-1 1 -5" radius="0.5" color="green" dynamic-body shadow="cast: true"></a-sphere>
+  const resetTimer = () => {
+    timeLeft = 60;
+    document.getElementById("time-left").innerText = timeLeft;
+  };
 
-      <!-- Arrows -->
-      <a-entity id="arrows" position="0 0 -1"></a-entity>
-    </a-entity>
-    
-    <!-- Shooting Mechanism -->
-    <a-entity id="shooting-controller" position="0 0 0">
-      <a-entity camera="active: true"></a-entity>
-    </a-entity>
+  const startGameTimer = () => {
+    gameTimer = setInterval(() => {
+      timeLeft--;
+      document.getElementById("time-left").innerText = timeLeft;
+      if (timeLeft <= 0) {
+        clearInterval(gameTimer);
+        alert("Game Over!");
+      }
+    }, 1000);
+  };
 
-    <!-- Sounds -->
-    <a-sound id="arrow-hit-sound" src="arrow-hit.mp3"></a-sound>
-    <a-sound id="background-music" src="background-music.mp3" autoplay="true" loop="true" volume="0.5"></a-sound>
-    <a-sound id="achievement-sound" src="achievement.mp3"></a-sound>
-  </a-scene>
-  <script src="script.js"></script>
-</body>
-</html>
+  const updateScore = () => {
+    document.getElementById("score").innerText = score;
+  };
+
+  const updateArrowsRemaining = () => {
+    document.getElementById("arrows-remaining").innerText = arrowsRemaining;
+  };
+
+  const updateHealth = () => {
+    document.getElementById("health").innerText = health;
+  };
+
+  const updateCoins = () => {
+    document.getElementById("coins").innerText = coins;
+  };
+
+  const checkAchievements = () => {
+    // Add logic to check and update achievements
+  };
+
+  gsap.to("#target-white", { x: 5, duration: 2, repeat: -1, yoyo: true });
+  gsap.to("#moving-obstacle", { x: -5, duration: 3, repeat: -1, yoyo: true });
+
+  initGameElements();
+});
