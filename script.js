@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const movingObstacle = document.getElementById('moving-obstacle');
   const arrowPickup = document.getElementById('arrow-pickup');
   const arrowPickup2 = document.getElementById('arrow-pickup-2');
+  const obstacle = document.getElementById('obstacle');
+  const arrowRefill = document.getElementById('arrow-refill');
 
   function updateScore(points) {
     if (doubleScoreActive) {
@@ -105,23 +107,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 50); // Update position every 50ms
   }
 
-  arrowPickup.addEventListener('collide', (e) => {
+  obstacle.addEventListener('collide', (e) => {
     if (e.detail.body.el.id === 'camera') {
-      updateArrowsRemaining(1);
-      arrowPickup.setAttribute('visible', 'false');
-      setTimeout(() => {
-        arrowPickup.setAttribute('visible', 'true');
-      }, 10000); // Reappear after 10 seconds
+      updateScore(-20); // Deduct points if the camera collides with the obstacle
+      specialEffectSound.play();
+      // Move obstacle to a new position after collision
+      obstacle.setAttribute('position', {
+        x: Math.random() * 20 - 10,
+        y: 1,
+        z: Math.random() * 80 - 40
+      });
     }
   });
 
-  arrowPickup2.addEventListener('collide', (e) => {
+  arrowRefill.addEventListener('collide', (e) => {
     if (e.detail.body.el.id === 'camera') {
-      updateArrowsRemaining(1);
-      arrowPickup2.setAttribute('visible', 'false');
-      setTimeout(() => {
-        arrowPickup2.setAttribute('visible', 'true');
-      }, 12000); // Reappear after 12 seconds
+      updateArrowsRemaining(5); // Replenish arrows if the camera collides with the arrow refill
+      arrowPickup.play();
+      // Move arrow refill to a new position after collection
+      arrowRefill.setAttribute('position', {
+        x: Math.random() * 20 - 10,
+        y: 1,
+        z: Math.random() * 80 - 40
+      });
     }
   });
 
