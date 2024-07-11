@@ -19,21 +19,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const camera = document.querySelector("#camera");
   const scoreDisplay = document.getElementById("score");
   const arrowsRemainingDisplay = document.getElementById("arrows-remaining");
+  const healthDisplay = document.getElementById("health");
+  const coinsDisplay = document.getElementById("coins");
   const timeLeftDisplay = document.getElementById("time-left");
   const arrowsVisual = document.getElementById("arrows-visual");
   const arrowHitSound = document.querySelector("#arrow-hit-sound");
   const backgroundMusic = document.querySelector("#background-music");
+  const achievementSound = document.querySelector("#achievement-sound");
   const sfxVolumeControl = document.getElementById("sfx-volume");
   const musicVolumeControl = document.getElementById("music-volume");
+  const leaderboardList = document.getElementById("leaderboard-list");
+  const achievementsList = document.getElementById("achievements-list");
 
   let score = 0;
   let arrowsRemaining = 5;
+  let health = 100;
+  let coins = 0;
   let gameDuration = 60; // seconds
   let bonusActive = false;
   let doubleScoreActive = false;
   let slowMotionActive = false;
   let shieldActive = false;
   let timerInterval;
+  let levels = 1;
+  let achievements = {};
 
   // Initialize game elements
   const initGameElements = () => {
@@ -47,6 +56,11 @@ document.addEventListener("DOMContentLoaded", () => {
     activateShieldPowerUp();
     activateArrowPickup();
     activateArrowPickup2();
+    updateScore();
+    updateArrowsRemaining();
+    updateHealth();
+    updateCoins();
+    checkAchievements();
   };
 
   // Reset Timer
@@ -71,15 +85,27 @@ document.addEventListener("DOMContentLoaded", () => {
   // Game Over
   const gameOver = () => {
     alert("Game Over! Your final score is " + score);
+    updateLeaderboard(score);
     resetGame();
+  };
+
+  // Update Leaderboard
+  const updateLeaderboard = (finalScore) => {
+    const li = document.createElement("li");
+    li.textContent = `Score: ${finalScore}`;
+    leaderboardList.appendChild(li);
   };
 
   // Reset Game
   const resetGame = () => {
     score = 0;
     arrowsRemaining = 5;
+    health = 100;
+    coins = 0;
     updateScore();
     updateArrowsRemaining();
+    updateHealth();
+    updateCoins();
     resetTimer();
     initGameElements();
   };
@@ -92,6 +118,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // Update Arrows Remaining
   const updateArrowsRemaining = () => {
     arrowsRemainingDisplay.innerText = arrowsRemaining;
+  };
+
+  // Update Health
+  const updateHealth = () => {
+    healthDisplay.innerText = health;
+  };
+
+  // Update Coins
+  const updateCoins = () => {
+    coinsDisplay.innerText = coins;
   };
 
   // Move Obstacle
@@ -161,6 +197,27 @@ document.addEventListener("DOMContentLoaded", () => {
       updateArrowsRemaining();
       arrowPickup2.setAttribute("visible", false);
     });
+  };
+
+  // Check Achievements
+  const checkAchievements = () => {
+    if (score >= 100 && !achievements['score_100']) {
+      achievements['score_100'] = true;
+      showAchievement('Score 100 Points');
+    }
+    if (arrowsRemaining >= 10 && !achievements['arrows_10']) {
+      achievements['arrows_10'] = true;
+      showAchievement('Collect 10 Arrows');
+    }
+    // Add more achievements as needed
+  };
+
+  // Show Achievement
+  const showAchievement = (achievement) => {
+    const li = document.createElement("li");
+    li.textContent = achievement;
+    achievementsList.appendChild(li);
+    achievementSound.components.sound.playSound();
   };
 
   // Initialize Game

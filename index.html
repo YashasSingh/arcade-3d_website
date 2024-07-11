@@ -10,6 +10,8 @@
   <div id="scoreboard">
     <p>Score: <span id="score">0</span></p>
     <p>Arrows Remaining: <span id="arrows-remaining">5</span></p>
+    <p>Health: <span id="health">100</span></p>
+    <p>Coins: <span id="coins">0</span></p>
   </div>
   <div id="timer">
     <p>Time Left: <span id="time-left">60</span> seconds</p>
@@ -24,6 +26,14 @@
   <div id="sound-controls">
     <p>Sound Effects: <input type="range" id="sfx-volume" min="0" max="1" step="0.1" value="0.5"></p>
     <p>Music: <input type="range" id="music-volume" min="0" max="1" step="0.1" value="0.5"></p>
+  </div>
+  <div id="leaderboard">
+    <h2>Leaderboard</h2>
+    <ul id="leaderboard-list"></ul>
+  </div>
+  <div id="achievements">
+    <h2>Achievements</h2>
+    <ul id="achievements-list"></ul>
   </div>
   <a-scene physics="gravity: 0 -9.8 0" shadow="type: pcfsoft">
     <!-- Lights -->
@@ -82,15 +92,14 @@
     </a-entity>
     
     <!-- Shooting Mechanism -->
-    <a-entity id="shooting-controller" position="0 1.6 4.5"></a-entity>
+    <a-entity id="shooting-controller" position="0 0 0">
+      <a-entity camera="active: true"></a-entity>
+    </a-entity>
 
-    <!-- Power-ups -->
-    <a-sphere id="power-up" position="2 1 -5" radius="0.5" color="blue" dynamic-body shadow="cast: true"></a-sphere>
-    <a-sphere id="double-score-power-up" position="3 1 -5" radius="0.5" color="yellow" dynamic-body shadow="cast: true"></a-sphere>
-    
-    <!-- Audio -->
+    <!-- Sounds -->
     <a-sound id="arrow-hit-sound" src="arrow-hit.mp3"></a-sound>
     <a-sound id="background-music" src="background-music.mp3" autoplay="true" loop="true" volume="0.5"></a-sound>
+    <a-sound id="achievement-sound" src="achievement.mp3"></a-sound>
   </a-scene>
   <script src="script.js"></script>
 </body>
