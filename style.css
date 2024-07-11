@@ -54,3 +54,12 @@ body {
     transform: translateY(-10px);
   }
 }
+#moving-obstacle {
+  animation: move-obstacle 10s infinite;
+}
+
+@keyframes move-obstacle {
+  0% { transform: translateX(-10px); }
+  50% { transform: translateX(10px); }
+  100% { transform: translateX(-10px); }
+}

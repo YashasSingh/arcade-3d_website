@@ -6,6 +6,8 @@ let bonusTargetDuration = 5; // Duration in seconds for which the bonus target a
 let doubleScoreActive = false;
 let doubleScoreDuration = 10; // Duration in seconds for double score
 let doubleScoreTimeout;
+let movingObstacleInterval;
+let obstacleSpeed = 0.05; // Speed of the moving obstacle
 
 document.addEventListener('DOMContentLoaded', () => {
   const scoreElement = document.getElementById('score');
@@ -16,6 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const bonusHitSound = document.getElementById('bonus-hit-sound');
   const doubleScorePowerUp = document.getElementById('double-score');
   const specialEffectSound = document.getElementById('special-effect-sound');
+  const movingObstacle = document.getElementById('moving-obstacle');
+  const arrowPickup = document.getElementById('arrow-pickup');
+  const arrowPickup2 = document.getElementById('arrow-pickup-2');
 
   function updateScore(points) {
     if (doubleScoreActive) {
@@ -35,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (gameTime <= 0) {
         clearInterval(gameTimer);
         clearInterval(bonusTargetInterval);
+        clearInterval(movingObstacleInterval);
         alert('Game Over! Your score: ' + score);
         return;
       }
@@ -84,9 +90,45 @@ document.addEventListener('DOMContentLoaded', () => {
     }, doubleScoreDuration * 1000);
   }
 
+  function moveObstacle() {
+    let direction = 1; // 1 for right, -1 for left
+    movingObstacleInterval = setInterval(() => {
+      let position = movingObstacle.getAttribute('position');
+      if (position.x >= 10 || position.x <= -10) {
+        direction *= -1;
+      }
+      movingObstacle.setAttribute('position', {
+        x: position.x + (direction * obstacleSpeed),
+        y: position.y,
+        z: position.z
+      });
+    }, 50); // Update position every 50ms
+  }
+
+  arrowPickup.addEventListener('collide', (e) => {
+    if (e.detail.body.el.id === 'camera') {
+      updateArrowsRemaining(1);
+      arrowPickup.setAttribute('visible', 'false');
+      setTimeout(() => {
+        arrowPickup.setAttribute('visible', 'true');
+      }, 10000); // Reappear after 10 seconds
+    }
+  });
+
+  arrowPickup2.addEventListener('collide', (e) => {
+    if (e.detail.body.el.id === 'camera') {
+      updateArrowsRemaining(1);
+      arrowPickup2.setAttribute('visible', 'false');
+      setTimeout(() => {
+        arrowPickup2.setAttribute('visible', 'true');
+      }, 12000); // Reappear after 12 seconds
+    }
+  });
+
   // Initialize game elements
   startGameTimer();
   initBonusTarget();
+  moveObstacle();
 
   // Event listeners for other game elements...
 });
