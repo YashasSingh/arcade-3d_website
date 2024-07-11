@@ -1,19 +1,64 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>AI PvP Mode - Grass Plot with Archery Game</title>
-  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js"></script>
-  <script src="https://unpkg.com/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
-  <link rel="stylesheet" type="text/css" href="styles.css">
-</head>
-<body>
-  <div id="scoreboard">
-    <p>Score: <span id="score">0</span></p>
-    <p>Arrows Remaining: <span id="arrows-remaining">5</span></p>
-    <p>Health: <span id="health">100</span></p>
-    <p>Coins: <span id="coins">0</span></p>
-  </div>
-  <div
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>AI PvP Mode - Grass Plot with Archery Game</title>
+      <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js"></script>
+      <script src="https://unpkg.com/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+      <link rel="stylesheet" type="text/css" href="styles.css">
+    </head>
+    <body>
+      <div id="scoreboard">
+        <p>Score: <span id="score">0</span></p>
+        <p>Arrows Remaining: <span id="arrows-remaining">5</span></p>
+        <p>Health: <span id="health">100</span></p>
+        <p>Coins: <span id="coins">0</span></p>
+      </div>
+      <div id="timer">
+        <p>Time Left: <span id="time-left">60</span></p>
+      </div>
+      <div id="arrows-visual">
+        <p>Arrows: <span id="arrows-visual"></span></p>
+      </div>
+      <a-scene physics="debug: true" background="color: #87CEEB">
+        <a-assets>
+          <a-asset-item id="arrow-model" src="arrow.glb"></a-asset-item>
+        </a-assets>
+        <!-- Player -->
+        <a-entity id="player" position="0 1.5 0" camera look-controls wasd-controls>
+          <a-entity id="camera" position="0 1.6 0"></a-entity>
+        </a-entity>
+        <!-- Ground -->
+        <a-plane static-body position="0 0 0" rotation="-90 0 0" width="10" height="10" material="color: #708090"></a-plane>
+        <!-- AI Opponent -->
+        <a-entity id="ai" position="5 1.5 0">
+          <a-sphere radius="0.2" color="red"></a-sphere>
+        </a-entity>
+        <!-- Arrow prefab -->
+        <a-entity id="arrow-prefab" visible="false" geometry="primitive: box; width: 0.2; height: 1" material="color: #000000" dynamic-body="mass: 0.1"></a-entity>
+        <script>
+          //  AI shooting logic
+          const ai = document.getElementById('ai');
+          const player = document.getElementById('player');
+          const arrowPrefab = document.getElementById('arrow-prefab');
+          let aiShootingInterval = null;
+          const startAIShooting = () => {
+            aiShootingInterval = setInterval(() => {
+              shootArrow();
+            }, 3000); // Shoot every 3 seconds
+          };
+          const shootArrow = () => {
+            // Create a new arrow entity
+            const newArrow = document.createElement('a-entity');
+            newArrow.setAttribute('id', 'ai-arrow');
+            newArrow.setAttribute('geometry', 'primitive: box; width: 0.2; height: 1');
+            newArrow.setAttribute('material', 'color: #000000');
+            newArrow.setAttribute('dynamic-body', 'mass: 0.1');
+            newArrow.setAttribute('position', ai.getAttribute('position'));
+            newArrow.setAttribute('visible', true);
+            // Set the arrow's direction towards the player
+            const playerPosition = player.getAttribute('position');
+            const direction = new THREE.Vector3().subVectors(playerPosition, ai.getAttribute('position')).normalize();
+            newArrow.setAttribute('direction', `${direction.x} ${direction.y} ${direction.z}`);
