@@ -78,3 +78,20 @@
           <a-entity geometry="primitive: plane; height: 0.1; width: 0.01" material="color: red; shader: flat" position="0 0 0"></a-entity>
         </a-entity>
         <a-sphere id="shield-power-up" position="-1 1 -5" radius="0.5" color="green" dynamic-body shadow="cast: true"></a-sphere>
+        <!-- Arrows -->
+        <a-entity id="arrows" position="0 0 -1"></a-entity>
+        </a-entity>
+
+        <!-- Shooting Mechanism -->
+        <a-entity id="shooting-controller" position="0 0 0">
+        <a-entity camera="active: true"></a-entity>
+        </a-entity>
+
+        <!-- Sounds -->
+        <a-sound id="arrow-hit-sound" src="arrow-hit.mp3"></a-sound>
+        <a-sound id="background-music" src="background-music.mp3" autoplay="true" loop="true"></a-sound>
+        </a-scene>
+
+        <script src="survival.js"></script>
+        </body>
+        </html>
