@@ -55,6 +55,16 @@
       left: 50%;
       transform: translateX(-50%) rotate(-45deg);
     }
+    #sound-controls {
+      position: absolute;
+      top: 120px;
+      left: 10px;
+      color: white;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border-radius: 5px;
+      font-family: Arial, sans-serif;
+    }
   </style>
 </head>
 <body>
@@ -71,6 +81,10 @@
     <div class="arrow-icon"></div>
     <div class="arrow-icon"></div>
     <div class="arrow-icon"></div>
+  </div>
+  <div id="sound-controls">
+    <p>Sound Effects: <input type="range" id="sfx-volume" min="0" max="1" step="0.1" value="0.5"></p>
+    <p>Music: <input type="range" id="music-volume" min="0" max="1" step="0.1" value="0.5"></p>
   </div>
   <a-scene physics="gravity: 0 -9.8 0" shadow="type: pcfsoft">
     <!-- Lights -->
@@ -121,32 +135,32 @@
     <a-entity id="shooting-controller" position="0 1.6 4.5"></a-entity>
 
     <!-- Power-ups -->
-    <a-sphere id="power-up" position="5 1 -5" radius="0.5" color="yellow" dynamic-body shadow="cast: true"></a-sphere>
+    <a-sphere id="power-up" position="2 1 -5" radius="0.5" color="gold" dynamic-body shadow="cast: true"></a-sphere>
+    <a-box id="arrow-refill" position="-2 1 -5" depth="0.5" height="0.5" width="0.5" color="green" dynamic-body shadow="cast: true"></a-box>
+    <a-entity id="obstacle" geometry="primitive: box; depth: 1; height: 2; width: 1" material="color: #8B4513" position="5 1 -20" dynamic-body shadow="cast: true"></a-entity>
 
-    <!-- Obstacles -->
-    <a-box id="obstacle" position="0 1 -5" depth="0.2" height="2" width="2" color="gray" dynamic-body shadow="cast: true"></a-box>
-
-    <!-- Random Arrow Refill -->
-    <a-box id="arrow-refill" position="-5 1 -15" depth="0.5" height="0.5" width="0.5" color="green" dynamic-body shadow="cast: true"></a-box>
-
-    <!-- Background Music -->
+    <!-- Audio -->
     <a-assets>
-      <audio id="background-music" src="background.mp3" autoplay loop></audio>
       <audio id="shoot-sound" src="shoot.mp3"></audio>
       <audio id="hit-sound" src="hit.mp3"></audio>
+      <audio id="power-up-sound" src="power-up.mp3"></audio>
       <audio id="reload-sound" src="reload.mp3"></audio>
-      <audio id="power-up-sound" src="powerup.mp3"></audio>
-      <audio id="refill-sound" src="refill.mp3"></audio>
-      <audio id="special-effect-sound" src="special.mp3"></audio>
+      <audio id="special-effect-sound" src="special-effect.mp3"></audio>
+      <audio id="background-music" src="background-music.mp3" autoplay loop></audio>
     </a-assets>
-    <a-sound src="#background-music" autoplay="true" loop="true"></a-sound>
-  
+    <a-sound src="#background-music" autoplay="true" loop="true" volume="0.5"></a-sound>
+
+    <!-- Wind Indicator -->
+    <a-entity id="wind-indicator" geometry="primitive: plane; height: 0.2; width: 1" material="color: blue" position="0 3 0" rotation="0 0 0"></a-entity>
+    
     <script>
       var score = 0;
       var arrowsRemaining = 5;
       var timeLeft = 60;
       var scoreMultiplier = 1;
       var currentLevel = 1;
+      var windStrength = 0;
+      var windDirection = 0;
 
       function updateScore(points) {
         score += points * scoreMultiplier;
@@ -208,7 +222,7 @@
           arrow.setAttribute('material', 'color', 'brown');
           arrow.setAttribute('position', '0 0 0');
           arrow.setAttribute('rotation', '-90 0 0');
-          arrow.setAttribute('velocity', '0 0 -10');
+          arrow.setAttribute('velocity', `0 0 ${-10 + windStrength}`);
           arrow.setAttribute('dynamic-body', 'shape: cylinder; mass: 0.1');
           arrow.setAttribute('shadow', 'cast', true);
           document.querySelector('#arrows').appendChild(arrow);
@@ -321,28 +335,25 @@
         alert(leaderboard);
       }
 
-      // Move to Next Level
-      function moveToNextLevel() {
-        currentLevel++;
-        alert('Level ' + currentLevel);
-        // Increase difficulty
-        var newSpeed = -10 - (currentLevel * 2);
-        var arrows = document.querySelectorAll('#arrows > a-entity');
-        arrows.forEach(function(arrow) {
-          arrow.setAttribute('velocity', '0 0 ' + newSpeed);
+      // Sound Controls
+      document.getElementById('sfx-volume').addEventListener('input', function() {
+        var volume = this.value;
+        document.querySelectorAll('a-sound').forEach(function(sound) {
+          sound.setAttribute('volume', volume);
         });
-      }
+      });
 
-      // Change Weather Conditions
+      document.getElementById('music-volume').addEventListener('input', function() {
+        var volume = this.value;
+        document.querySelector('#background-music').volume = volume;
+      });
+
+      // Wind Effect
       setInterval(function() {
-        var weatherConditions = ['#87CEEB', '#B0E0E6', '#778899'];
-        var randomWeather = weatherConditions[Math.floor(Math.random() * weatherConditions.length)];
-        document.querySelector('#sky').setAttribute('color', randomWeather);
-      }, 15000); // Change weather every 15 seconds
-
-      updateScore(0);
-      updateArrowsRemaining();
-      updateTimeLeft();
+        windStrength = (Math.random() - 0.5) * 2; // Random wind strength between -1 and 1
+        windDirection = (Math.random() - 0.5) * 360; // Random wind direction
+        document.querySelector('#wind-indicator').setAttribute('rotation', '0 0 ' + windDirection);
+      }, 5000); // Change wind every 5 seconds
     </script>
   </a-scene>
 </body>
