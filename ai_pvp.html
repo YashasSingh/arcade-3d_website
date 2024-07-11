@@ -162,6 +162,13 @@
               // Collision handling 
               document.addEventListener('collide', (event) => {
                 if (event.detail.body.el.id === 'ai-arrow' && event.detail.targetEl.id === 'player') {
+                  const updatePlayerScore = () => {
+                    document.getElementById("score").innerText = playerScore;
+                  };
+                  const gameOver = (winner) => {
+                    alert(`${winner} wins!`);
+                    // You can add logic to reset the game or show a game over screen here
+                  }
                   // Handle AI arrow collision with player
                   console.log("AI arrow hit player!");
                 } else if (event.detail.body.el.id === 'player-arrow' && event.detail.targetEl.id === 'ai') {
