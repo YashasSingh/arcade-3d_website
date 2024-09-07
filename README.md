@@ -1,5 +1,7 @@
 
 # Grass Plot with Archery Game
+![20240705-0227-41 5664130 (1)](https://github.com/user-attachments/assets/af63788e-8a8d-4f4a-95b9-7060e62c1e52)
+
 
 This project is a 3D archery game built using A-Frame for immersive web experiences. It features multiple game modes including **Time Trial**, **Survival**, and **AI PvP**. Each mode provides a unique challenge for players, from racing against the clock to competing against AI opponents.
 
